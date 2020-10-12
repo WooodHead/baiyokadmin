@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Badge, Button, Media } from 'react-bootstrap'
 import PropTypes from 'prop-types'
+import { useRouter } from 'next/router'
+
 // import EditMenuItemModal from '../modals/EditMenuItemModal'
 // import EditBurgerModal from '../modals/EditBurgerModal'
 // import EditDrinkModal from '../modals/EditDrinkModal'
@@ -19,7 +21,7 @@ const MenuItem = ({ item = null }) => {
   // const hideDrinkMenu = () => {
   //   setShowDrinkMenu(false)
   // }
-
+  const router = useRouter()
   return (
     <>
       {/* {showEditMenu && <EditMenuItemModal show={showEditMenu} onHide={hideEditMenu} item={item} />}
@@ -32,6 +34,10 @@ const MenuItem = ({ item = null }) => {
             <Button
               className="btn-medium ml-2"
               variant="outline-secondary"
+              onClick={() => router.push({
+                pathname: '/updateMenuitem',
+                query: { menuItemId: item._id}
+              })}
               // onClick={() => {
               //   item.category.includes('burger')
               //     ? setShowBurgerMenu(true)
