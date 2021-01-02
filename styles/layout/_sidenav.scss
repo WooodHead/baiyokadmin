@@ -1,0 +1,6 @@
+.sidenav-item {
+  height: 15rem;
+  &__icon {
+    @include center-thing;
+  }
+}

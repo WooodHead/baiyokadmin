@@ -12,12 +12,15 @@
     "@fortawesome/free-brands-svg-icons": "^5.14.0",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/react-fontawesome": "^0.1.11",
+    "@material-ui/core": "^4.11.2",
+    "@material-ui/icons": "^4.11.2",
     "@mdx-js/loader": "^1.6.18",
     "@next/mdx": "^9.5.3",
     "@zeit/next-css": "^1.0.1",
     "@zeit/next-sass": "^1.0.1",
     "axios": "^0.20.0",
     "bootstrap": "^4.5.0",
+    "classnames": "^2.2.6",
     "moment": "^2.27.0",
     "mongodb": "^3.6.1",
     "newsapi": "^2.4.1",
@@ -30,6 +33,8 @@
     "react-day-picker": "^7.4.8",
     "react-dom": "16.13.1",
     "styled-components": "^5.1.1",
+    "swr": "^0.3.11",
+    "use-sound": "^2.0.1",
     "uuidv4": "^6.2.3"
   }
 }
