@@ -35,11 +35,11 @@ const OrderCard = ({ order = null, refreshOrders, showStatus = false }) => {
           <Row>
             <Col>
               <h2 className='py-2'>{order && order.pickupName}</h2>
-              <h3>Pickup Time: {order.pickupTime}</h3>
+              <h3>#{order.orderNumber}</h3>
             </Col>
             <Col className='text-right '>
               {!order.touched && <div className='touch-dot'></div>}
-              {showStatus && <h3>{order.status}</h3>}
+              {showStatus ? <h3>{order.status}</h3> :<h3>Pickup Time: {order.pickupTime}</h3>}
             </Col>
           </Row>
         </Card.Body>

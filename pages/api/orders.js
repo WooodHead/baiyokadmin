@@ -7,6 +7,6 @@ export default async (req, res) => {
   const {
     query: { status = '' }
   } = req
-  const orders = await db.collection('orders').find({ status: { $regex: `.*${status}.*`, $options: 'i' } }).sort({ createdDate: 1 }).toArray()
+  const orders = await db.collection('orders').find({ status: { $regex: `.*${status}.*`, $options: 'i' } }).sort({ pickupTime: 1 }).toArray()
   res.status(200).json(orders)
 }
