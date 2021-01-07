@@ -63,6 +63,10 @@ const untouchedOrders = () => {
   return client.get(`/api/untouchedOrders`)
 }
 
+const delayOrder = (orderId, delayMins) => {
+  return client.get(`/api/delayOrder?orderId=${orderId}&delayMins=${delayMins}`)
+}
+
 export default {
   getMenuItems,
   addBooking,
@@ -77,5 +81,6 @@ export default {
   readyOrder,
   pickupOrder,
   touchOrder,
-  untouchedOrders
+  untouchedOrders,
+  delayOrder
 }

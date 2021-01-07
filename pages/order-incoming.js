@@ -31,12 +31,11 @@ const OrderIncoming = ({}) => {
     { volume: 0.25 }
   );
 
-  useEffect(() => {
-    console.log('orders tricked me here', count)
-    if (count > 0) {
-      playIncoming()
-    }
-  }, [orders])
+  // useEffect(() => {
+  //   if (count > 0) {
+  //     playIncoming()
+  //   }
+  // }, [orders])
 
   if (isLoading) return <div>loading</div>
   if (isError) return <div>error</div>

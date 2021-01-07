@@ -39,7 +39,7 @@ const OrderCard = ({ order = null, refreshOrders, showStatus = false }) => {
             </Col>
             <Col className='text-right '>
               {!order.touched && <div className='touch-dot'></div>}
-              {showStatus ? <h3>{order.status}</h3> :<h3>Pickup Time: {order.pickupTime}</h3>}
+              {showStatus ? <h3>{order.status}</h3> :<h3>Pickup Time: {order.pickupTime} {order.delayMins ? `(+${order.delayMins} mins)` : ''}</h3>}
             </Col>
           </Row>
         </Card.Body>
