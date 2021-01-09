@@ -59,7 +59,8 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
               {order.pickupName}
             </h1>
             <h2 className='text-gray mb-0 px-4 menu-modal-subtitle'>
-              Pickup Time: {order.pickupTime} {order.delayMins ? `(+${order.delayMins} mins)` : ''}
+              Pickup Time: {order.pickupTime}{' '}
+              {order.delayMins ? `(+${order.delayMins} mins)` : ''}
             </h2>
             <p className='text-gray mb-0 px-4 menu-modal-subtitle u-margin-bottom-small'>
               Contact Number: {order.phone}
@@ -79,7 +80,17 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                 {order.status === 'open' && (
                   <>
                     <Row className='u-margin-bottom-small'>
-                      <Col></Col>
+                      <Col>
+                        {' '}
+                        <button
+                          className='invert-theme-btn border full-width-btn mb-0 p-4'
+                          onClick={(e) => {
+                            e.preventDefault()
+                            setShowDelay(true)
+                          }}>
+                          Price adjustment
+                        </button>
+                      </Col>
                       <Col>
                         <button
                           className='invert-theme-btn border full-width-btn mb-0 p-4'
