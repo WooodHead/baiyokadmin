@@ -1,22 +1,29 @@
 import React, { useState } from 'react'
-import { Form, Modal, Row, Col } from 'react-bootstrap'
+import { Form, Modal, Row, Col, Spinner } from 'react-bootstrap'
 import OrderItem from '../order/OrderItem'
 import formatMoney from '../../services/formatMoney'
 import api from '../../services/API'
 
 const DelayOrderModal = ({ show, onHide, order, refreshOrders }) => {
-
   const [delayMins, setDelayMins] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const delayOrder = async (e) => {
     e.preventDefault()
+    setLoading(true)
     await api.delayOrder(order._id, delayMins)
     refreshOrders()
     onHide()
+    setLoading(false)
   }
 
   return (
-    <Modal show={show} onHide={onHide} size='lg' centered className='full-height-modal'>
+    <Modal
+      show={show}
+      onHide={onHide}
+      size='lg'
+      centered
+      className='full-height-modal'>
       <Modal.Header closeButton={true}>Delay Order</Modal.Header>
       <Modal.Body>
         <Form>
@@ -27,16 +34,20 @@ const DelayOrderModal = ({ show, onHide, order, refreshOrders }) => {
             <Row className='u-margin-bottom-small'>
               <Col>
                 <button
-                  className={`${delayMins===5 ? 'theme-btn' : 'invert-theme-btn'} border full-width-btn mb-0 p-4`}
-                  disabled={delayMins===5}
+                  className={`${
+                    delayMins === 5 ? 'theme-btn' : 'invert-theme-btn'
+                  } border full-width-btn mb-0 p-4`}
+                  disabled={delayMins === 5}
                   onClick={() => setDelayMins(5)}>
                   5 min(s)
                 </button>
               </Col>
               <Col>
                 <button
-                  className={`${delayMins===10 ? 'theme-btn' : 'invert-theme-btn'} border full-width-btn mb-0 p-4`}
-                  disabled={delayMins===10}
+                  className={`${
+                    delayMins === 10 ? 'theme-btn' : 'invert-theme-btn'
+                  } border full-width-btn mb-0 p-4`}
+                  disabled={delayMins === 10}
                   onClick={() => setDelayMins(10)}>
                   10 min(s)
                 </button>
@@ -45,16 +56,20 @@ const DelayOrderModal = ({ show, onHide, order, refreshOrders }) => {
             <Row>
               <Col>
                 <button
-                  className={`${delayMins===20 ? 'theme-btn' : 'invert-theme-btn'} border full-width-btn mb-0 p-4`}
-                  disabled={delayMins===20}
+                  className={`${
+                    delayMins === 20 ? 'theme-btn' : 'invert-theme-btn'
+                  } border full-width-btn mb-0 p-4`}
+                  disabled={delayMins === 20}
                   onClick={() => setDelayMins(20)}>
                   20 min(s)
                 </button>
               </Col>
               <Col>
                 <button
-                  className={`${delayMins===30 ? 'theme-btn' : 'invert-theme-btn'} border full-width-btn mb-0 p-4`}
-                  disabled={delayMins===30}
+                  className={`${
+                    delayMins === 30 ? 'theme-btn' : 'invert-theme-btn'
+                  } border full-width-btn mb-0 p-4`}
+                  disabled={delayMins === 30}
                   onClick={() => setDelayMins(30)}>
                   30 min(s)
                 </button>
@@ -73,9 +88,16 @@ const DelayOrderModal = ({ show, onHide, order, refreshOrders }) => {
                 <Col>
                   <button
                     className='theme-btn full-width-btn mb-0 p-4'
-                    disabled={!delayMins}
+                    disabled={!delayMins || loading}
                     onClick={(e) => delayOrder(e)}>
-                    Confirm
+                    {loading && (
+                      <><Spinner
+                        as='span'
+                        animation='border'
+                        aria-hidden='true'
+                      /><>&nbsp;&nbsp;</></>
+                    )}
+                    Confirm{loading ? 'ing' : ''}
                   </button>
                 </Col>
               </Row>

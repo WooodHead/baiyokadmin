@@ -1,15 +1,37 @@
-import React, { useState } from 'react'
-import { Form, Modal, Row, Col } from 'react-bootstrap'
+import React, { useState, useEffect } from 'react'
+import { Form, Modal, Row, Col, Spinner } from 'react-bootstrap'
 import OrderItem from '../order/OrderItem'
 import formatMoney from '../../services/formatMoney'
 import api from '../../services/API'
 import DelayOrderModal from './DelayOrderModal'
+import PriceAdjustModal from './PriceAdjustModal'
 
 const OrderModal = ({ show, onHide, order, refreshOrders }) => {
   const [showDelay, setShowDelay] = useState(false)
+  const [showAdjustPrice, setShowAdjustPrice] = useState(false)
+  const [adjustItem, setAdjustItem] = useState(undefined)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (order.adjustInCents) {
+      const item = {
+        quantity: 1,
+        item: {
+          title: order.adjustNote,
+        },
+        totalPrice: order.adjustInCents,
+      }
+      setAdjustItem(item)
+    }
+  }, [order])
 
   const hideDelay = () => {
     setShowDelay(false)
+    refreshOrders()
+  }
+
+  const hideAdjustPrice = () => {
+    setShowAdjustPrice(false)
     refreshOrders()
   }
 
@@ -22,23 +44,29 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
 
   const confirmOrder = async (e) => {
     e.preventDefault()
+    setLoading(true)
     await api.confirmOrder(order._id)
     refreshOrders()
     onHide()
+    setLoading(false)
   }
 
   const readyOrder = async (e) => {
     e.preventDefault()
+    setLoading(true)
     await api.readyOrder(order._id)
     refreshOrders()
     onHide()
+    setLoading(false)
   }
 
   const pickupOrder = async (e) => {
     e.preventDefault()
+    setLoading(true)
     await api.pickupOrder(order._id)
     refreshOrders()
     onHide()
+    setLoading(false)
   }
 
   return (
@@ -47,6 +75,14 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
         <DelayOrderModal
           show={showDelay}
           onHide={hideDelay}
+          order={order}
+          refreshOrders={refreshOrders}
+        />
+      )}
+      {showAdjustPrice && (
+        <PriceAdjustModal
+          show={showAdjustPrice}
+          onHide={hideAdjustPrice}
           order={order}
           refreshOrders={refreshOrders}
         />
@@ -60,7 +96,7 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
             </h1>
             <h2 className='text-gray mb-0 px-4 menu-modal-subtitle'>
               Pickup Time: {order.pickupTime}{' '}
-              {order.delayMins ? `(+${order.delayMins} mins)` : ''}
+              {order.delayMins ? `(+ Delay ${order.delayMins} mins)` : ''}
             </h2>
             <p className='text-gray mb-0 px-4 menu-modal-subtitle u-margin-bottom-small'>
               Contact Number: {order.phone}
@@ -72,6 +108,7 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                   order.items.map((item, idx) => (
                     <OrderItem key={idx} item={item} />
                   ))}
+                {adjustItem && <OrderItem item={adjustItem} />}
               </ul>
               <footer>
                 <h2 className='text-right u-margin-bottom-med'>
@@ -86,7 +123,7 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                           className='invert-theme-btn border full-width-btn mb-0 p-4'
                           onClick={(e) => {
                             e.preventDefault()
-                            setShowDelay(true)
+                            setShowAdjustPrice(true)
                           }}>
                           Price adjustment
                         </button>
@@ -113,8 +150,19 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                       <Col>
                         <button
                           className='theme-btn full-width-btn mb-0 p-4'
+                          disabled={loading}
                           onClick={(e) => confirmOrder(e)}>
-                          Confirm
+                          {loading && (
+                            <>
+                              <Spinner
+                                as='span'
+                                animation='border'
+                                aria-hidden='true'
+                              />
+                              <>&nbsp;&nbsp;</>
+                            </>
+                          )}
+                          Confirm{loading ? 'ing' : ''}
                         </button>
                       </Col>
                     </Row>
@@ -126,7 +174,18 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                     <Col>
                       <button
                         className='theme-btn full-width-btn mb-0 p-4'
+                        disabled={loading}
                         onClick={(e) => readyOrder(e)}>
+                        {loading && (
+                          <>
+                            <Spinner
+                              as='span'
+                              animation='border'
+                              aria-hidden='true'
+                            />
+                            <>&nbsp;&nbsp;</>
+                          </>
+                        )}
                         Ready for Pick up
                       </button>
                     </Col>
@@ -138,7 +197,18 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                     <Col>
                       <button
                         className='theme-btn full-width-btn mb-0 p-4'
+                        disabled={loading}
                         onClick={(e) => pickupOrder(e)}>
+                        {loading && (
+                          <>
+                            <Spinner
+                              as='span'
+                              animation='border'
+                              aria-hidden='true'
+                            />
+                            <>&nbsp;&nbsp;</>
+                          </>
+                        )}
                         Picked up
                       </button>
                     </Col>

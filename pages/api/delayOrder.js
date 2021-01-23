@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb'
-const sgMail = require('@sendgrid/mail')
+// const sgMail = require('@sendgrid/mail')
 
-sgMail.setApiKey(process.env.NEXT_SENDGRID_API_KEY)
-const SENDGRID_SENDER = process.env.NEXT_SENDGRID_SENDER
+// sgMail.setApiKey(process.env.NEXT_SENDGRID_API_KEY)
+// const SENDGRID_SENDER = process.env.NEXT_SENDGRID_SENDER
 
 const {
   connectToDatabaseUsingCache,
@@ -25,32 +25,32 @@ export default async (req, res) => {
       { $set: addUpdateMeta({ delayMins }) }
     )
   // 2. send email to customer about delay
-  const order = await db
-    .collection('orders')
-    .findOne({ _id: ObjectId(orderId) })
-  let { emailDelayTemplate, emailDelaySubject } = await db
-    .collection('tech_configs')
-    .findOne(findNotDeleted({}))
-    emailDelayTemplate = emailDelayTemplate
-    .replace('{pickupName}', order.pickupName)
-    .replace('{orderNumber}', `#${order.orderNumber}`)
-    .replace('{delayMins}', order.delayMins)
-    .replace('{link}', `<a href=${order.successUrl}>here</a>`)
-  const msg = {
-    to: order.email,
-    from: SENDGRID_SENDER,
-    subject: emailDelaySubject || '',
-    text: emailDelayTemplate || '',
-    html: emailDelayTemplate || ''
-  }
-  try {
-    await sgMail.send(msg)
-    console.log(`Delay email send to ${order.email}`)
-  } catch (error) {
-    console.error(error)
-    if (error.response) {
-      console.error(error.response.body)
-    }
-  }
+  // const order = await db
+  //   .collection('orders')
+  //   .findOne({ _id: ObjectId(orderId) })
+  // let { emailDelayTemplate, emailDelaySubject } = await db
+  //   .collection('tech_configs')
+  //   .findOne(findNotDeleted({}))
+  //   emailDelayTemplate = emailDelayTemplate
+  //   .replace('{pickupName}', order.pickupName)
+  //   .replace('{orderNumber}', `#${order.orderNumber}`)
+  //   .replace('{delayMins}', order.delayMins)
+  //   .replace('{link}', `<a href=${order.successUrl}>here</a>`)
+  // const msg = {
+  //   to: order.email,
+  //   from: SENDGRID_SENDER,
+  //   subject: emailDelaySubject || '',
+  //   text: emailDelayTemplate || '',
+  //   html: emailDelayTemplate || ''
+  // }
+  // try {
+  //   await sgMail.send(msg)
+  //   console.log(`Delay email send to ${order.email}`)
+  // } catch (error) {
+  //   console.error(error)
+  //   if (error.response) {
+  //     console.error(error.response.body)
+  //   }
+  // }
   res.status(200).json(result)
 }
