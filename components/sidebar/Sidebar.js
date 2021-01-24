@@ -17,27 +17,27 @@ import { useUntouchedCount } from '../../services/IncomingOrder'
 
 import classNames from 'classnames'
 
-const drawerWidth = 100
+const drawerWidth = 70
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex'
   },
   drawer: {
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up('xs')]: {
       width: drawerWidth,
       flexShrink: 0
     }
   },
   appBar: {
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up('xs')]: {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth
     }
   },
   menuButton: {
-    marginRight: theme.spacing(2),
-    [theme.breakpoints.up('sm')]: {
+    marginRight: theme.spacing(1),
+    [theme.breakpoints.up('xs')]: {
       display: 'none'
     }
   },
@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3)
+    padding: theme.spacing(1)
   }
 }))
 
@@ -120,7 +120,7 @@ export default function Sidebar(props) {
   )
 
   return (
-    <Hidden smDown implementation='css'>
+    <Hidden xsDown implementation='css'>
       <Drawer
         variant='permanent'
         anchor={'left'}
