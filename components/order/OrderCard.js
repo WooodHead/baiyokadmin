@@ -28,7 +28,7 @@ const OrderCard = ({ order = null, refreshOrders, showStatus = false }) => {
       )}
 
       <Card
-        style={{ width: '70rem' }}
+        style={{ width: '70rem', backgroundColor: order.option === 'delivery' ? '#EBDEF0' : '#D5F5E3'}}
         className='p-4 m-4'
         onClick={() => showOrderModal()}>
         <Card.Body>
@@ -39,7 +39,7 @@ const OrderCard = ({ order = null, refreshOrders, showStatus = false }) => {
             </Col>
             <Col className='text-right '>
               {!order.touched && <div className='touch-dot'></div>}
-              {showStatus ? <h3>{order.status}</h3> :<h3>Pickup Time: {order.pickupTime} {order.delayMins ? `(+${order.delayMins} mins)` : ''}</h3>}
+              {showStatus ? <h3>{order.status}</h3> : order.option === 'delivery' ? <h3>Delivery</h3>: <h3>Pickup Time: {order.pickupTime} {order.delayMins ? `(+${order.delayMins} mins)` : ''}</h3>}
             </Col>
           </Row>
         </Card.Body>
