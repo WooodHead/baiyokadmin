@@ -70,7 +70,7 @@ export default function Sidebar(props) {
           <ListItemIcon>
             <Link href='/order-incoming' passHref>
               <ReceiptIcon
-                style={{ fontSize: 50 }}
+                style={{ fontSize: 30 }}
                 className='sidenav-item__icon'
               />
             </Link>
@@ -82,7 +82,7 @@ export default function Sidebar(props) {
           <ListItemIcon>
             <Link href='/order-preparing' passHref>
               <OutdoorGrillIcon
-                style={{ fontSize: 50 }}
+                style={{ fontSize: 30 }}
                 className='sidenav-item__icon'
               />
             </Link>
@@ -97,7 +97,7 @@ export default function Sidebar(props) {
           <ListItemIcon>
             <Link href='/order-ready' passHref>
               <LocalMallIcon
-                style={{ fontSize: 50 }}
+                style={{ fontSize: 30 }}
                 className='sidenav-item__icon'
               />
             </Link>
@@ -108,7 +108,7 @@ export default function Sidebar(props) {
           <ListItemIcon>
             <Link href='/order-history' passHref>
               <HistoryIcon
-                style={{ fontSize: 50 }}
+                style={{ fontSize: 30 }}
                 className='sidenav-item__icon'
               />
             </Link>
