@@ -94,10 +94,17 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
             <h1 className='text-capitalize p-4 menu-modal-title'>
               {order.pickupName}
             </h1>
-            <h2 className='text-gray mb-0 px-4 menu-modal-subtitle'>
-              Pickup Time: {order.pickupTime}{' '}
-              {order.delayMins ? `(+ Delay ${order.delayMins} mins)` : ''}
-            </h2>
+            {order.option === 'pickup' && (
+              <h2 className='text-gray mb-0 px-4 menu-modal-subtitle'>
+                Pickup Time: {order.pickupTime}{' '}
+                {order.delayMins ? `(+ Delay ${order.delayMins} mins)` : ''}
+              </h2>
+            )}
+            {order.option === 'delivery' && (
+              <h2 className='text-gray mb-0 px-4 menu-modal-subtitle'>
+                Delivery Address: {order.address}
+              </h2>
+            )}
             <p className='text-gray mb-0 px-4 menu-modal-subtitle u-margin-bottom-small'>
               Contact Number: {order.phone}
             </p>
@@ -108,6 +115,15 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                   order.items.map((item, idx) => (
                     <OrderItem key={idx} item={item} />
                   ))}
+                {order.option === 'delivery' && (
+                  <OrderItem
+                    item={{
+                      quantity: 1,
+                      totalPrice: order.deliveryFeeInCents,
+                      item: { image: '', title: 'Delivery Fee' },
+                    }}
+                  />
+                )}
                 {adjustItem && <OrderItem item={adjustItem} />}
               </ul>
               <footer>
@@ -129,14 +145,16 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                         </button>
                       </Col>
                       <Col>
-                        <button
-                          className='invert-theme-btn border full-width-btn mb-0 p-4'
-                          onClick={(e) => {
-                            e.preventDefault()
-                            setShowDelay(true)
-                          }}>
-                          Delay order
-                        </button>
+                        {order.option !== 'delivery' && (
+                          <button
+                            className='invert-theme-btn border full-width-btn mb-0 p-4'
+                            onClick={(e) => {
+                              e.preventDefault()
+                              setShowDelay(true)
+                            }}>
+                            Delay order
+                          </button>
+                        )}
                       </Col>
                     </Row>
                     <Row>
@@ -186,7 +204,7 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                             <>&nbsp;&nbsp;</>
                           </>
                         )}
-                        Ready for Pick up
+                        {`Ready for ${order.option}`}
                       </button>
                     </Col>
                   </Row>
@@ -209,7 +227,11 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                             <>&nbsp;&nbsp;</>
                           </>
                         )}
-                        Picked up
+                        {`${
+                          order.option === 'delivery'
+                            ? 'delivered'
+                            : 'picked up'
+                        }`}
                       </button>
                     </Col>
                   </Row>

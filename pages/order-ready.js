@@ -33,7 +33,7 @@ const OrderReady = ({}) => {
   return (
     <section className='section section-main'>
       <Container>
-        <div className='mb-4'>Ready for Pick Up</div>
+        <div className='mb-4'>Ready for Pick Up / Delivery</div>
         {/* <div className='bg-white rounded border shadow-sm mb-4'> */}
         {orders.length &&
           orders.map((order) => (
