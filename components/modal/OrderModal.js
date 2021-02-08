@@ -5,12 +5,24 @@ import formatMoney from '../../services/formatMoney'
 import api from '../../services/API'
 import DelayOrderModal from './DelayOrderModal'
 import PriceAdjustModal from './PriceAdjustModal'
+import ConfirmMessageModal from './ConfirmMessageModal'
+import moment from 'moment'
 
 const OrderModal = ({ show, onHide, order, refreshOrders }) => {
   const [showDelay, setShowDelay] = useState(false)
   const [showAdjustPrice, setShowAdjustPrice] = useState(false)
   const [adjustItem, setAdjustItem] = useState(undefined)
   const [loading, setLoading] = useState(false)
+  const [confirmCancel, setConfirmCancel] = useState(false)
+
+  const handleClose = (e) => {
+    e.preventDefault()
+    setConfirmCancel(false)
+  }
+  const handleShow = (e) => {
+    e.preventDefault()
+    setConfirmCancel(true)
+  }
 
   useEffect(() => {
     if (order.adjustInCents) {
@@ -71,6 +83,12 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
 
   return (
     <>
+      <ConfirmMessageModal
+        message={'Are you sure to cancel the order?'}
+        show={confirmCancel}
+        onHide={handleClose}
+        confirm={cancelOrder}
+      />
       {showDelay && (
         <DelayOrderModal
           show={showDelay}
@@ -105,8 +123,11 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                 Delivery Address: {order.address}
               </h2>
             )}
+            <p className='text-gray mb-0 mt-2 px-4 menu-modal-subtitle u-margin-bottom-small'>
+              Contact Number: {order.phone}, Email: {order.email}
+            </p>
             <p className='text-gray mb-0 px-4 menu-modal-subtitle u-margin-bottom-small'>
-              Contact Number: {order.phone}
+              Placed On: {moment(order.createdDate).format('ddd DD-MMM-YYYY HH:mm')}
             </p>
             <div className='order-details p-4'>
               <h2 className='px-4'>Orders</h2>
@@ -161,7 +182,7 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                       <Col>
                         <button
                           className='theme-btn full-width-btn mb-0 p-4'
-                          onClick={(e) => cancelOrder(e)}>
+                          onClick={handleShow}>
                           Cancel
                         </button>
                       </Col>
