@@ -3,7 +3,7 @@ import { Container } from 'react-bootstrap'
 import useSound from 'use-sound'
 import OrderCard from '../components/order/OrderCard'
 import {useIncomingOrder, useUntouchedCount} from '../services/IncomingOrder'
-import api from '../services/API'
+import { isLoggedIn } from '../services/auth'
 
 const OrderIncoming = ({}) => {
   const [showModal, setShowModal] = useState(false)
@@ -31,29 +31,33 @@ const OrderIncoming = ({}) => {
     { volume: 0.25 }
   );
 
-  // useEffect(() => {
-  //   if (count > 0) {
-  //     playIncoming()
-  //   }
-  // }, [orders])
+  useEffect(() => {
+    if (count > 0) {
+      playIncoming()
+    }
+  }, [orders])
 
   if (isLoading) return <div>loading</div>
   if (isError) return <div>error</div>
   return (
     <section className='section section-main'>
-      <Container>
-        <div className='mb-4'>Incoming</div>
+      {isLoggedIn() ? <Container>
+        <div className='mb-4'>New Orders</div>
         {/* <div className='bg-white rounded border shadow-sm mb-4'> */}
-        {orders.length &&
+        {orders.length ?
           orders.map((order) => (
             <OrderCard
               key={order._id}
               order={order}
               refreshOrders={refreshOrders}
             />
-          ))}
+          )) : <h1>No new order.</h1>}
         {/* </div> */}
-      </Container>
+      </Container> : <>
+      <Container>
+        <div className='mb-4'>Please login</div>
+        </Container>
+      </>}
     </section>
   )
 }

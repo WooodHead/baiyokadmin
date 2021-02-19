@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Container } from 'react-bootstrap'
 import OrderCard from '../components/order/OrderCard'
-
+import { isLoggedIn } from '../services/auth'
 import api from '../services/API'
 
 const OrderHistory = ({}) => {
@@ -32,10 +32,10 @@ const OrderHistory = ({}) => {
 
   return (
     <section className='section section-main'>
-      <Container>
+      {isLoggedIn() ? <Container>
         <div className='mb-4'>Orders History</div>
         {/* <div className='bg-white rounded border shadow-sm mb-4'> */}
-        {orders.length &&
+        {orders.length ?
           orders.map((order) => (
             <OrderCard
               key={order._id}
@@ -43,9 +43,13 @@ const OrderHistory = ({}) => {
               refreshOrders={refreshOrders}
               showStatus
             />
-          ))}
+          )) : <h1>No order today.</h1>}
         {/* </div> */}
-      </Container>
+      </Container> : <>
+      <Container>
+        <div className='mb-4'>Please login</div>
+        </Container>
+      </>}
     </section>
   )
 }

@@ -71,6 +71,9 @@ const adjustPriceOrder = (orderId, adjustInCents, subTotalInCents, adjustNote) =
   return client.get(`/api/adjustPriceOrder?orderId=${orderId}&adjustInCents=${adjustInCents}&adjustNote=${adjustNote}&subTotalInCents=${subTotalInCents}`)
 }
 
+const addUser = (user) => {
+  return client.post('/api/addUser', { user }).then((res) => res.data)
+}
 
 export default {
   getMenuItems,
@@ -88,5 +91,6 @@ export default {
   touchOrder,
   untouchedOrders,
   delayOrder,
-  adjustPriceOrder
+  adjustPriceOrder,
+  addUser
 }

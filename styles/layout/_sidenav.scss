@@ -3,4 +3,7 @@
   &__icon {
     @include center-thing;
   }
+  &__selected {
+    color: $color-primary;
+  }
 }
