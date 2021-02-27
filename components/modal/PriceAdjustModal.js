@@ -1,5 +1,9 @@
 import React, { useState } from 'react'
 import { Form, Modal, Row, Col, Spinner } from 'react-bootstrap'
+import {
+  useQueryClient,
+  useMutation
+} from 'react-query'
 import formatMoney from '../../services/formatMoney'
 import api from '../../services/API'
 import styled from 'styled-components'
@@ -20,20 +24,23 @@ const PriceLineStyles = styled.div`
     width: 50rem;
   }
 `
-const PriceAdjustModal = ({ show, onHide, order, refreshOrders }) => {
+const PriceAdjustModal = ({ show, onHide, order }) => {
   const [adjustPrice, setAdjustPrice] = useState(order.adjustInCents/100)
   const [adjustNote, setAdjustNote] = useState(order.adjustNote)
   const [loading, setLoading] = useState(false)
-
   const [newTotalCents, setNewTotalCents] = useState(order.totalInCents)
-  const adjustPriceFunc = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    await api.adjustPriceOrder(order._id, (adjustPrice * 100), order.subTotalInCents, adjustNote)
-    refreshOrders()
-    onHide()
-    setLoading(false)
-  }
+  const queryClient = useQueryClient()
+  
+  const {mutate: adjustPriceFunc} =  useMutation(() => api.adjustPriceOrder(order._id, (adjustPrice * 100), order.subTotalInCents, adjustNote), {
+    onMutate: () => {
+      setLoading(true)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['ordersQuery', 'open'])
+      onHide()
+      setLoading(false)
+    }
+  })
 
   const handleChange = e => {
     const { name, type, value } = e.target;
@@ -114,7 +121,7 @@ const PriceAdjustModal = ({ show, onHide, order, refreshOrders }) => {
                   <button
                     className='theme-btn full-width-btn mb-0 p-4'
                     disabled={!adjustPrice || !adjustNote || loading}
-                    onClick={(e) => adjustPriceFunc(e)}>
+                    onClick={() => adjustPriceFunc()}>
                     {loading && (
                       <><Spinner
                         as='span'

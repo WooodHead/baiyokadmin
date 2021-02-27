@@ -1,14 +1,18 @@
 import '../styles/styles.scss'
 import 'react-day-picker/lib/style.css'
-// import 'bootstrap/dist/css/bootstrap.min.css'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { ReactQueryDevtools } from 'react-query/devtools'
 import Page from '../components/Page'
-import Sidebar from '../components/sidebar/Sidebar'
+const queryClient = new QueryClient()
+
 function MyApp({ Component, pageProps }) {
   return (
-    <Page>
-      {/* <Sidebar /> */}
-      <Component {...pageProps} />
-    </Page>
+    <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={false} />
+      <Page>
+        <Component {...pageProps} />
+      </Page>
+    </QueryClientProvider>
   )
 }
 

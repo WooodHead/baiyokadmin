@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react'
+import {
+  useQueryClient,
+  useMutation
+} from 'react-query'
 import { Form, Modal, Row, Col, Spinner } from 'react-bootstrap'
 import OrderItem from '../order/OrderItem'
 import formatMoney from '../../services/formatMoney'
@@ -8,15 +12,15 @@ import PriceAdjustModal from './PriceAdjustModal'
 import ConfirmMessageModal from './ConfirmMessageModal'
 import moment from 'moment'
 
-const OrderModal = ({ show, onHide, order, refreshOrders }) => {
+const OrderModal = ({ show, onHide, order }) => {
   const [showDelay, setShowDelay] = useState(false)
   const [showAdjustPrice, setShowAdjustPrice] = useState(false)
   const [adjustItem, setAdjustItem] = useState(undefined)
   const [loading, setLoading] = useState(false)
   const [confirmCancel, setConfirmCancel] = useState(false)
-
+  const queryClient = useQueryClient()
   const handleClose = (e) => {
-    e.preventDefault()
+    // e.preventDefault()
     setConfirmCancel(false)
   }
   const handleShow = (e) => {
@@ -39,47 +43,51 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
 
   const hideDelay = () => {
     setShowDelay(false)
-    refreshOrders()
   }
 
   const hideAdjustPrice = () => {
     setShowAdjustPrice(false)
-    refreshOrders()
   }
 
-  const cancelOrder = async (e) => {
-    e.preventDefault()
-    await api.cancelOrder(order._id)
-    refreshOrders()
-    onHide()
-  }
+  const {mutate: cancelOrder} =  useMutation((id) => api.cancelOrder(id), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['ordersQuery', 'open'])
+      onHide()
+    }
+  })
 
-  const confirmOrder = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    await api.confirmOrder(order._id)
-    refreshOrders()
-    onHide()
-    setLoading(false)
-  }
+  const {mutate: confirmOrder} =  useMutation((id) => api.confirmOrder(id), {
+    onMutate: () => {
+      setLoading(true)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['ordersQuery', 'open'])
+      onHide()
+      setLoading(false)
+    }
+  })
 
-  const readyOrder = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    await api.readyOrder(order._id)
-    refreshOrders()
-    onHide()
-    setLoading(false)
-  }
+  const {mutate: readyOrder} =  useMutation((id) => api.readyOrder(id), {
+    onMutate: () => {
+      setLoading(true)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['ordersQuery', 'preparing'])
+      onHide()
+      setLoading(false)
+    }
+  })
 
-  const pickupOrder = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    await api.pickupOrder(order._id)
-    refreshOrders()
-    onHide()
-    setLoading(false)
-  }
+  const {mutate: pickupOrder} =  useMutation((id) => api.pickupOrder(id), {
+    onMutate: () => {
+      setLoading(true)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['ordersQuery', 'ready'])
+      onHide()
+      setLoading(false)
+    }
+  })
 
   return (
     <>
@@ -87,14 +95,13 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
         message={'Are you sure to cancel the order?'}
         show={confirmCancel}
         onHide={handleClose}
-        confirm={cancelOrder}
+        confirm={() => cancelOrder(order._id)}
       />
       {showDelay && (
         <DelayOrderModal
           show={showDelay}
           onHide={hideDelay}
           order={order}
-          refreshOrders={refreshOrders}
         />
       )}
       {showAdjustPrice && (
@@ -102,7 +109,6 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
           show={showAdjustPrice}
           onHide={hideAdjustPrice}
           order={order}
-          refreshOrders={refreshOrders}
         />
       )}
       <Modal show={show} onHide={onHide} size='lg' centered>
@@ -190,7 +196,7 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                         <button
                           className='theme-btn full-width-btn mb-0 p-4'
                           disabled={loading}
-                          onClick={(e) => confirmOrder(e)}>
+                          onClick={() => confirmOrder(order._id)}>
                           {loading && (
                             <>
                               <Spinner
@@ -214,7 +220,7 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                       <button
                         className='theme-btn full-width-btn mb-0 p-4'
                         disabled={loading}
-                        onClick={(e) => readyOrder(e)}>
+                        onClick={() => readyOrder(order._id)}>
                         {loading && (
                           <>
                             <Spinner
@@ -237,7 +243,7 @@ const OrderModal = ({ show, onHide, order, refreshOrders }) => {
                       <button
                         className='theme-btn full-width-btn mb-0 p-4'
                         disabled={loading}
-                        onClick={(e) => pickupOrder(e)}>
+                        onClick={() => pickupOrder(order._id)}>
                         {loading && (
                           <>
                             <Spinner

@@ -1,8 +1,10 @@
 import axios from 'axios'
+import React from 'react'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 
 export const client = axios.create({
   baseURL: '',
-  timeout: 30000
+  timeout: 30000,
 })
 
 //  ****** no auths needed  *******//
@@ -12,7 +14,9 @@ const getMenuItems = () => {
 }
 
 const getMenuItem = (menuItemId) => {
-  return client.get(`/api/menuitem?menuItemId=${menuItemId}`).then((res) => res.data)
+  return client
+    .get(`/api/menuitem?menuItemId=${menuItemId}`)
+    .then((res) => res.data)
 }
 
 const addBooking = (reservation) => {
@@ -20,7 +24,9 @@ const addBooking = (reservation) => {
 }
 
 const getBooking = (bookingId) => {
-  return client.get(`/api/getBooking?bookingId=${bookingId}`).then((res) => res.data)
+  return client
+    .get(`/api/getBooking?bookingId=${bookingId}`)
+    .then((res) => res.data)
 }
 
 const checkin = (checkin) => {
@@ -32,15 +38,19 @@ const getBookingSetup = (date) => {
 }
 
 const updateMenuItem = (menuItem) => {
-  return client.post('/api/updateMenuItem', { menuItem }).then((res) => res.data)
+  return client
+    .post('/api/updateMenuItem', { menuItem })
+    .then((res) => res.data)
 }
 
 const getOrders = (status) => {
-  return client.get(`/api/orders?status=${status}`)
+  return client.get(`/api/orders?status=${status}`).then((res) => res.data)
 }
 
-const cancelOrder = (orderId) => {
-  return client.get(`/api/cancelOrder?orderId=${orderId}`)
+function cancelOrder(orderId) {
+  return client
+    .get(`/api/cancelOrder?orderId=${orderId}`)
+    .then((res) => res.data)
 }
 
 const confirmOrder = (orderId) => {
@@ -60,15 +70,36 @@ const touchOrder = (orderId) => {
 }
 
 const untouchedOrders = () => {
-  return client.get(`/api/untouchedOrders`)
+  return client.get(`/api/untouchedOrders`).then((res) => res.data)
 }
 
 const delayOrder = (orderId, delayMins) => {
   return client.get(`/api/delayOrder?orderId=${orderId}&delayMins=${delayMins}`)
 }
 
-const adjustPriceOrder = (orderId, adjustInCents, subTotalInCents, adjustNote) => {
-  return client.get(`/api/adjustPriceOrder?orderId=${orderId}&adjustInCents=${adjustInCents}&adjustNote=${adjustNote}&subTotalInCents=${subTotalInCents}`)
+function ordersQuery(status) {
+  return useQuery(['ordersQuery', status], () => getOrders(status))
+}
+
+function untouchedOrdersQuery() {
+  const untouchQuery = useQuery('getUntouchedCount', () => untouchedOrders(), {
+    refetchInterval: 5000,
+  })
+  useQuery(['ordersQuery', 'open'], () => getOrders('open'), {
+    enabled: untouchQuery.data?.count > 0
+  })
+  return untouchQuery
+}
+
+const adjustPriceOrder = (
+  orderId,
+  adjustInCents,
+  subTotalInCents,
+  adjustNote
+) => {
+  return client.get(
+    `/api/adjustPriceOrder?orderId=${orderId}&adjustInCents=${adjustInCents}&adjustNote=${adjustNote}&subTotalInCents=${subTotalInCents}`
+  )
 }
 
 const addUser = (user) => {
@@ -92,5 +123,8 @@ export default {
   untouchedOrders,
   delayOrder,
   adjustPriceOrder,
-  addUser
+  addUser,
+  ordersQuery,
+  untouchedOrdersQuery,
+  // cancelOrderMutation,
 }

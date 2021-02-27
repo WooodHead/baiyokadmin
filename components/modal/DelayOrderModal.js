@@ -1,21 +1,27 @@
 import React, { useState } from 'react'
 import { Form, Modal, Row, Col, Spinner } from 'react-bootstrap'
+import {
+  useQueryClient,
+  useMutation
+} from 'react-query'
 import OrderItem from '../order/OrderItem'
 import formatMoney from '../../services/formatMoney'
 import api from '../../services/API'
 
-const DelayOrderModal = ({ show, onHide, order, refreshOrders }) => {
+const DelayOrderModal = ({ show, onHide, order }) => {
   const [delayMins, setDelayMins] = useState(null)
   const [loading, setLoading] = useState(false)
-
-  const delayOrder = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    await api.delayOrder(order._id, delayMins)
-    refreshOrders()
-    onHide()
-    setLoading(false)
-  }
+  const queryClient = useQueryClient()
+  const {mutate: delayOrder} =  useMutation(() => api.delayOrder(order._id, delayMins), {
+    onMutate: () => {
+      setLoading(true)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['ordersQuery', 'open'])
+      onHide()
+      setLoading(false)
+    }
+  })
 
   return (
     <Modal
@@ -89,7 +95,7 @@ const DelayOrderModal = ({ show, onHide, order, refreshOrders }) => {
                   <button
                     className='theme-btn full-width-btn mb-0 p-4'
                     disabled={!delayMins || loading}
-                    onClick={(e) => delayOrder(e)}>
+                    onClick={() => delayOrder()}>
                     {loading && (
                       <><Spinner
                         as='span'

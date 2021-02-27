@@ -5,31 +5,10 @@ import { isLoggedIn } from '../services/auth'
 import api from '../services/API'
 
 const OrderHistory = ({}) => {
-  const [showModal, setShowModal] = useState(false)
-  const [orders, setOrders] = useState([])
-  const [refresh, setRefresh] = useState(false)
+  const {data: orders, isLoading, isError} = api.ordersQuery('')
 
-  const closeModal = () => {
-    setShowModal(false)
-  }
-
-  const cancel = () => {
-    closeModal()
-    navigate('/')
-  }
-
-  const refreshOrders = () => {
-    setRefresh(!refresh)
-  }
-
-  useEffect(() => {
-    async function fetchData() {
-      const response = await api.getOrders('')
-      setOrders(response.data)
-    }
-    fetchData()
-  }, [refresh])
-
+  if (isLoading) return <div>loading ... </div>
+  if (isError) return <div>error</div>
   return (
     <section className='section section-main'>
       {isLoggedIn() ? <Container>
@@ -40,7 +19,6 @@ const OrderHistory = ({}) => {
             <OrderCard
               key={order._id}
               order={order}
-              refreshOrders={refreshOrders}
               showStatus
             />
           )) : <h1>No order today.</h1>}

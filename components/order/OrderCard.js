@@ -1,20 +1,27 @@
 import React, { useState } from 'react'
 import { Badge, Button, Card, Row, Col } from 'react-bootstrap'
+import {
+  useQueryClient,
+  useMutation
+} from 'react-query'
+
 import OrderModal from '../modal/OrderModal'
 import api from '../../services/API'
 
-const OrderCard = ({ order = null, refreshOrders, showStatus = false }) => {
+const OrderCard = ({ order = null, showStatus = false }) => {
+  const queryClient = useQueryClient()
   const [showOrder, setShowOrder] = useState(false)
-
   const hideOrder = () => {
     setShowOrder(false)
-    refreshOrders()
   }
 
-  const showOrderModal = async () => {
-    await api.touchOrder(order._id)
-    setShowOrder(true)
-  }
+  const {mutate: showOrderModal} =  useMutation(() => api.touchOrder(order._id), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['ordersQuery', 'open'])
+      queryClient.invalidateQueries('getUntouchedCount')
+      setShowOrder(true)
+    }
+  })
 
   return (
     <>
@@ -23,7 +30,6 @@ const OrderCard = ({ order = null, refreshOrders, showStatus = false }) => {
           show={showOrder}
           onHide={hideOrder}
           order={order}
-          refreshOrders={refreshOrders}
         />
       )}
 

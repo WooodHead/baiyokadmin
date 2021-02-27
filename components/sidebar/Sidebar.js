@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useQuery } from 'react-query'
 import { useRouter } from 'next/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Drawer from '@material-ui/core/Drawer'
@@ -15,11 +16,10 @@ import LocalMallIcon from '@material-ui/icons/LocalMall'
 import HistoryIcon from '@material-ui/icons/History'
 import LoginIcon from '@material-ui/icons/Lock'
 import LogoutIcon from '@material-ui/icons/ExitToApp'
-import { useUntouchedCount } from '../../services/IncomingOrder'
 import { isLoggedIn, logout } from '../../services/auth'
 import classNames from 'classnames'
 import { ControlPointDuplicateTwoTone } from '@material-ui/icons'
-
+import api from '../../services/API'
 const drawerWidth = 70
 
 const useStyles = makeStyles((theme) => ({
@@ -59,7 +59,7 @@ export default function Sidebar(props) {
   const router = useRouter()
   const classes = useStyles()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const { count, isCountLoading, isCountError } = useUntouchedCount()
+  const { data } = api.untouchedOrdersQuery()
   const [userLoggedIn, setUserLoggedIn] = useState(false)
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
@@ -80,10 +80,14 @@ export default function Sidebar(props) {
             <Link href='/order-incoming' passHref>
               <ReceiptIcon
                 style={{ fontSize: 30 }}
-                className={`sidenav-item__icon ${router.pathname === '/order-incoming' ? 'sidenav-item__selected' : ''}`}
+                className={`sidenav-item__icon ${
+                  router.pathname === '/order-incoming'
+                    ? 'sidenav-item__selected'
+                    : ''
+                }`}
               />
             </Link>
-            {count && count > 0 ? (
+            {data && data.count > 0 ? (
               <div className='touch-dot__nav'></div>
             ) : (
               <></>
@@ -96,7 +100,11 @@ export default function Sidebar(props) {
             <Link href='/order-preparing' passHref>
               <OutdoorGrillIcon
                 style={{ fontSize: 30 }}
-                className={`sidenav-item__icon ${router.pathname === '/order-preparing' ? 'sidenav-item__selected' : ''}`}
+                className={`sidenav-item__icon ${
+                  router.pathname === '/order-preparing'
+                    ? 'sidenav-item__selected'
+                    : ''
+                }`}
               />
             </Link>
           </ListItemIcon>
@@ -111,7 +119,11 @@ export default function Sidebar(props) {
             <Link href='/order-ready' passHref>
               <LocalMallIcon
                 style={{ fontSize: 30 }}
-                className={`sidenav-item__icon ${router.pathname === '/order-ready' ? 'sidenav-item__selected' : ''}`}
+                className={`sidenav-item__icon ${
+                  router.pathname === '/order-ready'
+                    ? 'sidenav-item__selected'
+                    : ''
+                }`}
               />
             </Link>
           </ListItemIcon>
@@ -122,7 +134,11 @@ export default function Sidebar(props) {
             <Link href='/order-history' passHref>
               <HistoryIcon
                 style={{ fontSize: 30 }}
-                className={`sidenav-item__icon ${router.pathname === '/order-history' ? 'sidenav-item__selected' : ''}`}
+                className={`sidenav-item__icon ${
+                  router.pathname === '/order-history'
+                    ? 'sidenav-item__selected'
+                    : ''
+                }`}
               />
             </Link>
           </ListItemIcon>
@@ -133,7 +149,11 @@ export default function Sidebar(props) {
               <Link href='/signup' passHref>
                 <LoginIcon
                   style={{ fontSize: 30 }}
-                  className={`sidenav-item__icon ${router.pathname === '/signup' ? 'sidenav-item__selected' : ''}`}
+                  className={`sidenav-item__icon ${
+                    router.pathname === '/signup'
+                      ? 'sidenav-item__selected'
+                      : ''
+                  }`}
                 />
               </Link>
             </ListItemIcon>
@@ -145,7 +165,11 @@ export default function Sidebar(props) {
               <Link href='/signup' passHref>
                 <LogoutIcon
                   style={{ fontSize: 30 }}
-                  className={`sidenav-item__icon ${router.pathname === '/signup' ? 'sidenav-item__selected' : ''}`}
+                  className={`sidenav-item__icon ${
+                    router.pathname === '/signup'
+                      ? 'sidenav-item__selected'
+                      : ''
+                  }`}
                 />
               </Link>
             </ListItemIcon>
