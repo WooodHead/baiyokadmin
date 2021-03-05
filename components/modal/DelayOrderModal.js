@@ -4,8 +4,6 @@ import {
   useQueryClient,
   useMutation
 } from 'react-query'
-import OrderItem from '../order/OrderItem'
-import formatMoney from '../../services/formatMoney'
 import api from '../../services/API'
 
 const DelayOrderModal = ({ show, onHide, order }) => {
@@ -59,7 +57,17 @@ const DelayOrderModal = ({ show, onHide, order }) => {
                 </button>
               </Col>
             </Row>
-            <Row>
+            <Row className='u-margin-bottom-small'>
+              <Col>
+                <button
+                  className={`${
+                    delayMins === 15 ? 'theme-btn' : 'invert-theme-btn'
+                  } border full-width-btn mb-0 p-4`}
+                  disabled={delayMins === 15}
+                  onClick={() => setDelayMins(15)}>
+                  15 min(s)
+                </button>
+              </Col>
               <Col>
                 <button
                   className={`${
@@ -70,6 +78,8 @@ const DelayOrderModal = ({ show, onHide, order }) => {
                   20 min(s)
                 </button>
               </Col>
+            </Row>
+            <Row className='u-margin-bottom-small'>
               <Col>
                 <button
                   className={`${
@@ -80,8 +90,40 @@ const DelayOrderModal = ({ show, onHide, order }) => {
                   30 min(s)
                 </button>
               </Col>
+              <Col>
+                <button
+                  className={`${
+                    delayMins === 40 ? 'theme-btn' : 'invert-theme-btn'
+                  } border full-width-btn mb-0 p-4`}
+                  disabled={delayMins === 40}
+                  onClick={() => setDelayMins(40)}>
+                  40 min(s)
+                </button>
+              </Col>
             </Row>
-            <div className='modal-buffer'></div>
+            <Row className='u-margin-bottom-small'>
+              <Col>
+                <button
+                  className={`${
+                    delayMins === 45 ? 'theme-btn' : 'invert-theme-btn'
+                  } border full-width-btn mb-0 p-4`}
+                  disabled={delayMins === 45}
+                  onClick={() => setDelayMins(45)}>
+                  45 min(s)
+                </button>
+              </Col>
+              <Col>
+                <button
+                  className={`${
+                    delayMins === 60 ? 'theme-btn' : 'invert-theme-btn'
+                  } border full-width-btn mb-0 p-4`}
+                  disabled={delayMins === 60}
+                  onClick={() => setDelayMins(60)}>
+                  1 Hour
+                </button>
+              </Col>
+            </Row>
+            {/* <div className='modal-buffer'></div> */}
             <footer>
               <Row>
                 <Col>

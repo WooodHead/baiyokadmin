@@ -11,6 +11,7 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import ReceiptIcon from '@material-ui/icons/Receipt'
+import SettingsIcon from '@material-ui/icons/Settings'
 import OutdoorGrillIcon from '@material-ui/icons/OutdoorGrill'
 import LocalMallIcon from '@material-ui/icons/LocalMall'
 import HistoryIcon from '@material-ui/icons/History'
@@ -75,6 +76,21 @@ export default function Sidebar(props) {
       <div className={classes.toolbar} />
       <Divider />
       <List>
+      <ListItem button key='Setup' divider className='sidenav-item'>
+          <ListItemIcon>
+            <Link href='/setup' passHref>
+              <SettingsIcon
+                style={{ fontSize: 30 }}
+                className={`sidenav-item__icon ${
+                  router.pathname === '/setup'
+                    ? 'sidenav-item__selected'
+                    : ''
+                }`}
+              />
+            </Link>
+          </ListItemIcon>
+          {/* <ListItemText primary='Incoming Order' /> */}
+        </ListItem>
         <ListItem button key='Incoming Order' divider className='sidenav-item'>
           <ListItemIcon>
             <Link href='/order-incoming' passHref>

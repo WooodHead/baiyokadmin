@@ -1,6 +1,5 @@
 import axios from 'axios'
-import React from 'react'
-import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { useQuery } from 'react-query'
 
 export const client = axios.create({
   baseURL: '',
@@ -11,6 +10,10 @@ export const client = axios.create({
 
 const getMenuItems = () => {
   return client.get(`/api/menuitems`).then((res) => res.data)
+}
+
+function menuItemQuery() {
+  return useQuery('menuitems', () => getMenuItems())
 }
 
 const getMenuItem = (menuItemId) => {
@@ -77,6 +80,10 @@ const delayOrder = (orderId, delayMins) => {
   return client.get(`/api/delayOrder?orderId=${orderId}&delayMins=${delayMins}`)
 }
 
+const switchItem = (itemId, available) => {
+  return client.get(`/api/availableItem?itemId=${itemId}&available=${available}`)
+}
+
 function ordersQuery(status) {
   return useQuery(['ordersQuery', status], () => getOrders(status))
 }
@@ -89,6 +96,14 @@ function untouchedOrdersQuery() {
     enabled: untouchQuery.data?.count > 0
   })
   return untouchQuery
+}
+
+const getBusinessHours = () => {
+  return client.get(`/api/businessHours`).then((res) => res.data)
+}
+
+function businessHours() {
+  return useQuery('businessHours', () => getBusinessHours())
 }
 
 const adjustPriceOrder = (
@@ -126,5 +141,7 @@ export default {
   addUser,
   ordersQuery,
   untouchedOrdersQuery,
-  // cancelOrderMutation,
+  businessHours,
+  switchItem,
+  menuItemQuery
 }

@@ -1,0 +1,10 @@
+.setup-card {
+  padding: 3rem;
+  text-align: center;
+  font-size: 2rem;
+  text-transform: uppercase;
+  width: 90%;
+  background-color: $color-white;
+  box-shadow: 0 1.5rem 2rem rgba($color: $color-black, $alpha: .1);
+  cursor: pointer;
+}

@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {
-  useQueryClient,
-  useMutation
-} from 'react-query'
+import { useQueryClient, useMutation } from 'react-query'
 import { Form, Modal, Row, Col, Spinner } from 'react-bootstrap'
 import OrderItem from '../order/OrderItem'
 import formatMoney from '../../services/formatMoney'
@@ -49,14 +46,14 @@ const OrderModal = ({ show, onHide, order }) => {
     setShowAdjustPrice(false)
   }
 
-  const {mutate: cancelOrder} =  useMutation((id) => api.cancelOrder(id), {
+  const { mutate: cancelOrder } = useMutation((id) => api.cancelOrder(id), {
     onSuccess: () => {
       queryClient.invalidateQueries(['ordersQuery', 'open'])
       onHide()
-    }
+    },
   })
 
-  const {mutate: confirmOrder} =  useMutation((id) => api.confirmOrder(id), {
+  const { mutate: confirmOrder } = useMutation((id) => api.confirmOrder(id), {
     onMutate: () => {
       setLoading(true)
     },
@@ -64,10 +61,10 @@ const OrderModal = ({ show, onHide, order }) => {
       queryClient.invalidateQueries(['ordersQuery', 'open'])
       onHide()
       setLoading(false)
-    }
+    },
   })
 
-  const {mutate: readyOrder} =  useMutation((id) => api.readyOrder(id), {
+  const { mutate: readyOrder } = useMutation((id) => api.readyOrder(id), {
     onMutate: () => {
       setLoading(true)
     },
@@ -75,10 +72,10 @@ const OrderModal = ({ show, onHide, order }) => {
       queryClient.invalidateQueries(['ordersQuery', 'preparing'])
       onHide()
       setLoading(false)
-    }
+    },
   })
 
-  const {mutate: pickupOrder} =  useMutation((id) => api.pickupOrder(id), {
+  const { mutate: pickupOrder } = useMutation((id) => api.pickupOrder(id), {
     onMutate: () => {
       setLoading(true)
     },
@@ -86,7 +83,7 @@ const OrderModal = ({ show, onHide, order }) => {
       queryClient.invalidateQueries(['ordersQuery', 'ready'])
       onHide()
       setLoading(false)
-    }
+    },
   })
 
   return (
@@ -98,11 +95,7 @@ const OrderModal = ({ show, onHide, order }) => {
         confirm={() => cancelOrder(order._id)}
       />
       {showDelay && (
-        <DelayOrderModal
-          show={showDelay}
-          onHide={hideDelay}
-          order={order}
-        />
+        <DelayOrderModal show={showDelay} onHide={hideDelay} order={order} />
       )}
       {showAdjustPrice && (
         <PriceAdjustModal
@@ -121,7 +114,21 @@ const OrderModal = ({ show, onHide, order }) => {
             {order.option === 'pickup' && (
               <h2 className='text-gray mb-0 px-4 menu-modal-subtitle'>
                 Pickup Time: {order.pickupTime}{' '}
-                {order.delayMins ? `(+ Delay ${order.delayMins} mins)` : ''}
+                {order.delayMins === '60'
+                  ? '(+ Delay 1 hour)'
+                  : order.delayMins
+                  ? `(+ Delay ${order.delayMins} mins)`
+                  : ''}
+              </h2>
+            )}
+            {order.option === 'delivery' && (
+              <h2 className='text-gray mb-4 px-4 menu-modal-subtitle'>
+                Delivery Time: {moment(order.deliveryTime).format('hh:mm a')}{' '}
+                {order.delayMins === '60'
+                  ? '(+ Delay 1 hour)'
+                  : order.delayMins
+                  ? `(+ Delay ${order.delayMins} mins)`
+                  : ''}
               </h2>
             )}
             {order.option === 'delivery' && (
@@ -133,7 +140,8 @@ const OrderModal = ({ show, onHide, order }) => {
               Contact Number: {order.phone}, Email: {order.email}
             </p>
             <p className='text-gray mb-0 px-4 menu-modal-subtitle u-margin-bottom-small'>
-              Placed On: {moment(order.createdDate).format('ddd DD-MMM-YYYY HH:mm')}
+              Placed On:{' '}
+              {moment(order.createdDate).format('ddd DD-MMM-YYYY HH:mm')}
             </p>
             <div className='order-details p-4'>
               <h2 className='px-4'>Orders</h2>
@@ -172,16 +180,14 @@ const OrderModal = ({ show, onHide, order }) => {
                         </button>
                       </Col>
                       <Col>
-                        {order.option !== 'delivery' && (
-                          <button
-                            className='invert-theme-btn border full-width-btn mb-0 p-4'
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setShowDelay(true)
-                            }}>
-                            Delay order
-                          </button>
-                        )}
+                        <button
+                          className='invert-theme-btn border full-width-btn mb-0 p-4'
+                          onClick={(e) => {
+                            e.preventDefault()
+                            setShowDelay(true)
+                          }}>
+                          Delay order
+                        </button>
                       </Col>
                     </Row>
                     <Row>

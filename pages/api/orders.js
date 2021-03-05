@@ -13,6 +13,7 @@ export default async (req, res) => {
     start.setHours(0,0,0,0);
     let end = new Date();
     end.setHours(23,59,59,999);
+    console.log(start, end)
     q = {...q, createdDate: {$gte: start, $lt: end}}
   }
   const orders = await db.collection('orders').find(q).sort({ pickupTime: 1 }).toArray()

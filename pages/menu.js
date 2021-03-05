@@ -17,7 +17,9 @@ import api from '../services/API'
 
 const Menu = ({}) => {
   const [showModal, setShowModal] = useState(false)
-  const [menuitems, setMenuitems] = useState([])
+  const { data: menuitems, isLoading, isError } = api.menuItemQuery()
+
+  // const [menuitems, setMenuitems] = useState([])
   const closeModal = () => {
     setShowModal(false)
   }
@@ -27,19 +29,10 @@ const Menu = ({}) => {
     navigate('/')
   }
 
-  useEffect(() => {
-    console.log('load menu')
-    async function fetchData() {
-      const response = await api.getMenuItems()
-      setMenuitems(response)
-    }
-    fetchData()
-  }, [])
-
   return (
-    <section className='section py-5 order-section'>
+    <section className='section section-main'>
       <Container>
-        {menuitems.length === 0 ? (
+        {isLoading ? (
           <>
             <Spinner animation='border' variant='primary' className='mr-2' />{' '}
             Loading menu...
@@ -64,13 +57,8 @@ const Menu = ({}) => {
 
                       <Accordion.Collapse eventKey={title} show>
                         <div className='bg-white rounded border shadow-sm mb-4'>
-                          {menuitems
+                          {menuitems && menuitems
                             .filter((item) => item.category === category)
-                            // .sort((a, b) =>
-                            //   a.title.localeCompare(b.title, undefined, {
-                            //     sensitivity: 'accent'
-                            //   })
-                            // )
                             .map((item) => (
                               <MenuItem key={item._id} item={item} />
                             ))}

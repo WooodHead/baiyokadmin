@@ -1,74 +1,68 @@
 import React, { useState } from 'react'
-import { Badge, Button, Media } from 'react-bootstrap'
+import { useQueryClient, useMutation } from 'react-query'
+import { Badge, Button, Media, Spinner } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
-
-// import EditMenuItemModal from '../modals/EditMenuItemModal'
-// import EditBurgerModal from '../modals/EditBurgerModal'
-// import EditDrinkModal from '../modals/EditDrinkModal'
+import api from '../../services/API'
 
 const MenuItem = ({ item = null }) => {
-  // const [showEditMenu, setShowEditMenu] = useState(false)
-  // const [showBurgerMenu, setShowBurgerMenu] = useState(false)
-  // const [showDrinkMenu, setShowDrinkMenu] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const queryClient = useQueryClient()
+  const { mutate: switchItem } = useMutation(
+    (available) => api.switchItem(item._id, available),
+    {
+      onMutate: () => {
+        setLoading(true)
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries('menuitems')
+        setLoading(false)
+      },
+      onError: () => {
+        setLoading(false)
+      }
+    }
+  )
 
-  // const hideEditMenu = () => {
-  //   setShowEditMenu(false)
-  // }
-  // const hideBurgerMenu = () => {
-  //   setShowBurgerMenu(false)
-  // }
-  // const hideDrinkMenu = () => {
-  //   setShowDrinkMenu(false)
-  // }
-  const router = useRouter()
   return (
     <>
-      {/* {showEditMenu && <EditMenuItemModal show={showEditMenu} onHide={hideEditMenu} item={item} />}
-      {showBurgerMenu && <EditBurgerModal show={showBurgerMenu} onHide={hideBurgerMenu} item={item} />}
-      {showDrinkMenu && <EditDrinkModal show={showDrinkMenu} onHide={hideDrinkMenu} item={item} />} */}
-      <div className="p-3 border-bottom gold-members">
+      <div className='p-3 border-bottom gold-members'>
         {/* todo don't use float-right... use flex insteead */}
-        <span className="float-right">
-          {item.available ? (
+        <span className='float-right'>
+          {loading ? (
+            <Spinner animation='border' variant='primary' className='mr-2' />
+          ) : item.available ? (
             <Button
-              className="btn-medium ml-2"
-              variant="outline-secondary"
-              onClick={() => router.push({
-                pathname: '/updateMenuitem',
-                query: { menuItemId: item._id}
-              })}
-              // onClick={() => {
-              //   item.category.includes('burger')
-              //     ? setShowBurgerMenu(true)
-              //     : item.category.includes('sandwich')
-              //       ? setShowEditMenu(true)
-              //       : setShowDrinkMenu(true)
-              // }}
-            >
+              className='btn-medium ml-2'
+              variant='outline-success'
+              onClick={() => switchItem(false)}>
               ${(item.priceInCents / 100).toFixed(2)}
             </Button>
           ) : (
-            <Button variant="outline-danger" className="btn-medium text-uppercase no-pointer ml-2" disabled>
-                Sold Out
+            <Button
+              variant='outline-danger'
+              className='btn-medium text-uppercase ml-2'
+              onClick={() => switchItem(true)}>
+              Sold Out
             </Button>
           )}
         </span>
         <Media>
           <Media.Body>
-            <h4 className="mb-2 text-capitalize">
+            <h4 className='mb-2 text-capitalize'>
               <strong>{item.title}</strong>
               {item.badge && (
-                <Badge variant="danger" className="ml-2 text-capitalize">
+                <Badge variant='danger' className='ml-2 text-capitalize'>
                   {item.badge}
                 </Badge>
               )}
             </h4>
-            <p className="text-gray mb-0">
+            <p className='text-gray mb-0'>
               {item.subtitle &&
-              (item.subtitle.charAt(item.subtitle.length - 1) === '.' ? item.subtitle.substring(0, item.subtitle.length - 1) : item.subtitle)}
+                (item.subtitle.charAt(item.subtitle.length - 1) === '.'
+                  ? item.subtitle.substring(0, item.subtitle.length - 1)
+                  : item.subtitle)}
             </p>
-            {/* <p className="mb-0">${(item.priceInCents / 100).toFixed(2)}</p> */}
           </Media.Body>
         </Media>
       </div>
@@ -86,7 +80,7 @@ MenuItem.propTypes = {
   minValue: PropTypes.number,
   maxValue: PropTypes.number,
   getValue: PropTypes.func,
-  available: PropTypes.bool
+  available: PropTypes.bool,
 }
 MenuItem.defaultProps = {
   imageAlt: '',
@@ -96,7 +90,7 @@ MenuItem.defaultProps = {
   priceUnit: '$',
   showPromoted: false,
   badgeVariant: 'danger',
-  available: true
+  available: true,
 }
 
 export default MenuItem
