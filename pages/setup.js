@@ -15,8 +15,11 @@ export default function Setup() {
         ) : (
           <>
             <Row>
+              <Link href='/closed-date'>
+                <div className='setup-card m-4'>Setup Closed Date</div>
+              </Link>
               <Link href='/menu'>
-                <div className='setup-card'>Setup Menu</div>
+                <div className='setup-card m-4'>Setup Menu</div>
               </Link>
             </Row>
           </>

@@ -106,6 +106,7 @@ function businessHours() {
   return useQuery('businessHours', () => getBusinessHours())
 }
 
+
 const adjustPriceOrder = (
   orderId,
   adjustInCents,
@@ -119,6 +120,22 @@ const adjustPriceOrder = (
 
 const addUser = (user) => {
   return client.post('/api/addUser', { user }).then((res) => res.data)
+}
+
+const getDateConfigs = () => {
+  return client.get(`/api/getDateConfigs`).then((res) => res.data)
+}
+
+function dateConfigsQuery() {
+  return useQuery(['dateConfigs'], () => getDateConfigs())
+}
+
+const deleteDate = (dateId) => {
+  return client.get(`/api/deleteDate?dateId=${dateId}`)
+}
+
+const addDate = (date) => {
+  return client.post(`/api/addDate`, { date }).then((res) => res.data)
 }
 
 export default {
@@ -143,5 +160,8 @@ export default {
   untouchedOrdersQuery,
   businessHours,
   switchItem,
-  menuItemQuery
+  menuItemQuery,
+  dateConfigsQuery,
+  deleteDate,
+  addDate,
 }
