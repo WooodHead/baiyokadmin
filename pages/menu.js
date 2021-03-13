@@ -11,7 +11,6 @@ import {
 } from 'react-bootstrap'
 import MenuItem from '../components/common/MenuItem'
 import { CATEGORIES } from '../components/StaticData'
-import Icon from '../components/common/FontAwesome'
 
 import api from '../services/API'
 

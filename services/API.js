@@ -90,7 +90,7 @@ function ordersQuery(status) {
 
 function untouchedOrdersQuery() {
   const untouchQuery = useQuery('getUntouchedCount', () => untouchedOrders(), {
-    refetchInterval: 5000,
+    refetchInterval: 60000,
   })
   useQuery(['ordersQuery', 'open'], () => getOrders('open'), {
     enabled: untouchQuery.data?.count > 0
@@ -138,6 +138,10 @@ const addDate = (date) => {
   return client.post(`/api/addDate`, { date }).then((res) => res.data)
 }
 
+const setClosedShop = (isClosedShop) => {
+  return client.get(`/api/setClosedShop?isClosedShop=${isClosedShop}`)
+}
+
 export default {
   getMenuItems,
   addBooking,
@@ -164,4 +168,5 @@ export default {
   dateConfigsQuery,
   deleteDate,
   addDate,
+  setClosedShop,
 }

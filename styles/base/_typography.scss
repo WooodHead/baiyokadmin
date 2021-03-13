@@ -128,3 +128,9 @@ body {
     font-size: 1.5rem;
   }
 }
+
+.notification {
+  text-transform: uppercase;
+  color: $color-secondary-dark;
+  font-style: italic;
+}
