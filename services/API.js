@@ -6,86 +6,119 @@ export const client = axios.create({
   timeout: 30000,
 })
 
-//  ****** no auths needed  *******//
+// need auth detail
 
-const getMenuItems = () => {
-  return client.get(`/api/menuitems`).then((res) => res.data)
+const getHeader = (idToken) => {
+  const headers = {
+    Authorization: idToken,
+  }
+  return headers
+}
+//  ****** no auths needed  *******//
+const getMenuItems = (AuthUser) => {
+  const headers = getHeader(AuthUser)
+  return client.get(`/api/menuitems`, { headers }).then((res) => res.data)
 }
 
 function menuItemQuery() {
   return useQuery('menuitems', () => getMenuItems())
 }
 
-const getMenuItem = (menuItemId) => {
+const getMenuItem = (menuItemId, AuthUser) => {
+  const headers = getHeader(AuthUser)
   return client
-    .get(`/api/menuitem?menuItemId=${menuItemId}`)
+    .get(`/api/menuitem?menuItemId=${menuItemId}`, { headers })
     .then((res) => res.data)
 }
 
-const addBooking = (reservation) => {
-  return client.post('/api/addBooking', { reservation }).then((res) => res.data)
-}
-
-const getBooking = (bookingId) => {
+const addBooking = (reservation, AuthUser) => {
+  const headers = getHeader(AuthUser)
   return client
-    .get(`/api/getBooking?bookingId=${bookingId}`)
+    .post('/api/addBooking', { reservation }, { headers })
     .then((res) => res.data)
 }
 
-const checkin = (checkin) => {
-  return client.post('/api/checkin', { checkin }).then((res) => res.data)
-}
-
-const getBookingSetup = (date) => {
-  return client.get(`/api/getBookingSetup?date=${date}`).then((res) => res.data)
-}
-
-const updateMenuItem = (menuItem) => {
+const getBooking = (bookingId, AuthUser) => {
+  const headers = getHeader(AuthUser)
   return client
-    .post('/api/updateMenuItem', { menuItem })
+    .get(`/api/getBooking?bookingId=${bookingId}`, { headers })
     .then((res) => res.data)
 }
 
-const getOrders = (status) => {
-  return client.get(`/api/orders?status=${status}`).then((res) => res.data)
-}
-
-function cancelOrder(orderId) {
+const checkin = (checkin, AuthUser) => {
+  const headers = getHeader(AuthUser)
   return client
-    .get(`/api/cancelOrder?orderId=${orderId}`)
+    .post('/api/checkin', { checkin }, { headers })
     .then((res) => res.data)
 }
 
-const confirmOrder = (orderId) => {
-  return client.get(`/api/confirmOrder?orderId=${orderId}`)
+const getBookingSetup = (date, AuthUser) => {
+  const headers = getHeader(AuthUser)
+  return client
+    .get(`/api/getBookingSetup?date=${date}`, { headers })
+    .then((res) => res.data)
 }
 
-const readyOrder = (orderId) => {
-  return client.get(`/api/readyOrder?orderId=${orderId}`)
+const updateMenuItem = (menuItem, AuthUser) => {
+  const headers = getHeader(AuthUser)
+  return client
+    .post('/api/updateMenuItem', { menuItem }, { headers })
+    .then((res) => res.data)
 }
 
-const pickupOrder = (orderId) => {
-  return client.get(`/api/pickupOrder?orderId=${orderId}`)
+const getOrders = (status, idToken) => {
+  const headers = getHeader(idToken)
+  return client
+    .get(`/api/orders?status=${status}`, { headers })
+    .then((res) => res.data)
 }
 
-const touchOrder = (orderId) => {
-  return client.get(`/api/touchOrder?orderId=${orderId}`)
+function cancelOrder(orderId, AuthUser) {
+  const headers = getHeader(AuthUser)
+  return client
+    .get(`/api/cancelOrder?orderId=${orderId}`, { headers })
+    .then((res) => res.data)
 }
 
-const untouchedOrders = () => {
-  return client.get(`/api/untouchedOrders`).then((res) => res.data)
+const confirmOrder = (orderId, AuthUser) => {
+  const headers = getHeader(AuthUser)
+  return client.get(`/api/confirmOrder?orderId=${orderId}`, { headers })
 }
 
-const delayOrder = (orderId, delayMins) => {
-  return client.get(`/api/delayOrder?orderId=${orderId}&delayMins=${delayMins}`)
+const readyOrder = (orderId, AuthUser) => {
+  const headers = getHeader(AuthUser)
+  return client.get(`/api/readyOrder?orderId=${orderId}`, { headers })
 }
 
-const switchItem = (itemId, available) => {
-  return client.get(`/api/availableItem?itemId=${itemId}&available=${available}`)
+const pickupOrder = (orderId, AuthUser) => {
+  const headers = getHeader(AuthUser)
+  return client.get(`/api/pickupOrder?orderId=${orderId}`, { headers })
 }
 
-function ordersQuery(status) {
-  return useQuery(['ordersQuery', status], () => getOrders(status))
+const touchOrder = (orderId, AuthUser) => {
+  const headers = getHeader(AuthUser)
+  return client.get(`/api/touchOrder?orderId=${orderId}`, { headers })
+}
+
+const untouchedOrders = (AuthUser) => {
+  const headers = getHeader(AuthUser)
+  return client.get(`/api/untouchedOrders`, { headers }).then((res) => res.data)
+}
+
+const delayOrder = (orderId, delayMins, AuthUser) => {
+  const headers = getHeader(AuthUser)
+  return client.get(
+    `/api/delayOrder?orderId=${orderId}&delayMins=${delayMins}`,
+    { headers }
+  )
+}
+
+const switchItem = (itemId, available, AuthUser) => {
+  const headers = getHeader(AuthUser)
+  return client.get(
+    `/api/availableItem?itemId=${itemId}&available=${available}`,
+    { headers }
+  )
 }
 
 function untouchedOrdersQuery() {
@@ -93,17 +126,14 @@ function untouchedOrdersQuery() {
     refetchInterval: 60000,
   })
   useQuery(['ordersQuery', 'open'], () => getOrders('open'), {
-    enabled: untouchQuery.data?.count > 0
+    enabled: untouchQuery.data?.count > 0,
   })
   return untouchQuery
 }
 
-const getBusinessHours = () => {
-  return client.get(`/api/businessHours`).then((res) => res.data)
-}
-
-function businessHours() {
-  return useQuery('businessHours', () => getBusinessHours())
+const getBusinessHours = (idToken) => {
+  const headers = getHeader(idToken)
+  return client.get(`/api/businessHours`, { headers }).then((res) => res.data)
 }
 
 
@@ -114,16 +144,19 @@ const adjustPriceOrder = (
   adjustNote
 ) => {
   return client.get(
-    `/api/adjustPriceOrder?orderId=${orderId}&adjustInCents=${adjustInCents}&adjustNote=${adjustNote}&subTotalInCents=${subTotalInCents}`
+    `/api/adjustPriceOrder?orderId=${orderId}&adjustInCents=${adjustInCents}&adjustNote=${adjustNote}&subTotalInCents=${subTotalInCents}`,
+    { headers }
   )
 }
 
 const addUser = (user) => {
-  return client.post('/api/addUser', { user }).then((res) => res.data)
+  return client
+    .post('/api/addUser', { user }, { headers })
+    .then((res) => res.data)
 }
 
 const getDateConfigs = () => {
-  return client.get(`/api/getDateConfigs`).then((res) => res.data)
+  return client.get(`/api/getDateConfigs`, { headers }).then((res) => res.data)
 }
 
 function dateConfigsQuery() {
@@ -131,15 +164,20 @@ function dateConfigsQuery() {
 }
 
 const deleteDate = (dateId) => {
-  return client.get(`/api/deleteDate?dateId=${dateId}`)
+  return client.get(`/api/deleteDate?dateId=${dateId}`, { headers })
 }
 
 const addDate = (date) => {
-  return client.post(`/api/addDate`, { date }).then((res) => res.data)
+  return client
+    .post(`/api/addDate`, { date }, { headers })
+    .then((res) => res.data)
 }
 
-const setClosedShop = (isClosedShop) => {
-  return client.get(`/api/setClosedShop?isClosedShop=${isClosedShop}`)
+const setClosedShop = (isClosedShop, idToken) => {
+  const headers = getHeader(idToken)
+  return client.get(`/api/setClosedShop?isClosedShop=${isClosedShop}`, {
+    headers,
+  })
 }
 
 export default {
@@ -160,9 +198,8 @@ export default {
   delayOrder,
   adjustPriceOrder,
   addUser,
-  ordersQuery,
   untouchedOrdersQuery,
-  businessHours,
+  getBusinessHours,
   switchItem,
   menuItemQuery,
   dateConfigsQuery,

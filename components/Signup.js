@@ -48,35 +48,25 @@ const Signup = () => {
     }
   }
 
-  useEffect(() => {
-    async function addUser(dbUser) {
-      const res = await api.addUser(dbUser)
-      if (res.isAdminUser) {
-        setUser(res)
-      }
-    }
-    logout(firebase)
-    const unregisterAuthObserver = firebase
-      .auth()
-      .onAuthStateChanged((user) => {
-        if (user) {
-          const dbUser = {
-            uid: user.uid,
-            phoneNumber: user.phoneNumber,
-          }
-          addUser(dbUser)
-        }
-      })
-    return () => unregisterAuthObserver() // Make sure we un-register Firebase observers when the component unmounts.
-  }, [])
-
   // useEffect(() => {
-
-  //   // logout(firebase)
-  //   setFirebaseInit(true)
-  //   if (isLoggedIn()) {
-  //     navigate('/order-incoming')
+  //   async function addUser(dbUser) {
+  //     const res = await api.addUser(dbUser)
+  //     if (res.isAdminUser) {
+  //       setUser(res)
+  //     }
   //   }
+  //   const unregisterAuthObserver = firebase
+  //     .auth()
+  //     .onAuthStateChanged((user) => {
+  //       if (user) {
+  //         const dbUser = {
+  //           uid: user.uid,
+  //           phoneNumber: user.phoneNumber,
+  //         }
+  //         addUser(dbUser)
+  //       }
+  //     })
+  //   return () => unregisterAuthObserver() // Make sure we un-register Firebase observers when the component unmounts.
   // }, [])
 
   return (

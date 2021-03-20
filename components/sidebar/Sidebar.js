@@ -20,8 +20,13 @@ import { isLoggedIn, logout } from '../../services/auth'
 import classNames from 'classnames'
 import { ControlPointDuplicateTwoTone } from '@material-ui/icons'
 import api from '../../services/API'
+import {
+  useAuthUser,
+  withAuthUser,
+  withAuthUserTokenSSR,
+  AuthAction,
+} from 'next-firebase-auth'
 const drawerWidth = 70
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -55,7 +60,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function Sidebar(props) {
+function Sidebar(props) {
+  const AuthUser = useAuthUser()
   const router = useRouter()
   const classes = useStyles()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -158,14 +164,14 @@ export default function Sidebar(props) {
             </Link>
           </ListItemIcon>
         </ListItem>
-        {!isLoggedIn() && (
+        {!AuthUser?.id && (
           <ListItem button key='Login' divider className='sidenav-item'>
             <ListItemIcon>
-              <Link href='/signup' passHref>
+              <Link href='/login-page' passHref>
                 <LoginIcon
                   style={{ fontSize: 30 }}
                   className={`sidenav-item__icon ${
-                    router.pathname === '/signup'
+                    router.pathname === '/login-page'
                       ? 'sidenav-item__selected'
                       : ''
                   }`}
@@ -174,19 +180,21 @@ export default function Sidebar(props) {
             </ListItemIcon>
           </ListItem>
         )}
-        {isLoggedIn() && (
+        {AuthUser?.id && (
           <ListItem button key='Logout' divider className='sidenav-item'>
             <ListItemIcon>
-              <Link href='/signup' passHref>
+              {/* <Link href='/signup' passHref> */}
+                <div onClick={()=> AuthUser.signOut()}>
                 <LogoutIcon
                   style={{ fontSize: 30 }}
                   className={`sidenav-item__icon ${
-                    router.pathname === '/signup'
+                    router.pathname === '/login-page'
                       ? 'sidenav-item__selected'
                       : ''
                   }`}
                 />
-              </Link>
+                </div>
+              {/* </Link> */}
             </ListItemIcon>
           </ListItem>
         )}
@@ -208,3 +216,8 @@ export default function Sidebar(props) {
     </Hidden>
   )
 }
+
+export default withAuthUser({
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+  authPageURL: '/login-page/',
+})(Sidebar)

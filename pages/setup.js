@@ -1,14 +1,31 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { useQueryClient, useMutation } from 'react-query'
+import { useQuery, useQueryClient, useMutation } from 'react-query'
 import { Container, Row, Spinner } from 'react-bootstrap'
+import {
+  useAuthUser,
+  withAuthUser,
+  AuthAction,
+} from 'next-firebase-auth'
 import api from '../services/API'
-export default function Setup() {
+
+function Setup() {
   const queryClient = useQueryClient()
-  const { data: businessHours } = api.businessHours()
+  const AuthUser = useAuthUser()
+  const idTokenQuery = useQuery(['idToken'], () => AuthUser.getIdToken())
+
+  const { data: businessHours, isLoading, isError, isIdle, error } = useQuery(
+    ['businessHours'],
+    () => api.getBusinessHours(idTokenQuery.data),
+    {
+      retry: 1,
+      enabled: idTokenQuery.data ? true : false,
+    }
+  )
+
   const [isUpdating, setIsUpdating] = useState(false)
   const { mutate: closedShop } = useMutation(
-    (isClosedShop) => api.setClosedShop(isClosedShop),
+    (isClosedShop) => api.setClosedShop(isClosedShop, idTokenQuery.data),
     {
       onMutate: () => {
         setIsUpdating(true)
@@ -62,3 +79,8 @@ export default function Setup() {
     </section>
   )
 }
+
+export default withAuthUser({
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+  authPageURL: '/login-page/',
+})(Setup)

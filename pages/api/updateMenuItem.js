@@ -7,7 +7,6 @@ let db = null
 export default async (req, res) => {
   db = await connectToDatabaseUsingCache(process.env.NEXT_MONGODB_URI, db)
   const { _id, ...itemWithoutId } = req.body.menuItem
-  console.log( 'itemWithoutId', itemWithoutId )
   const result = await db.collection('menuitems').updateOne({_id: ObjectId(_id)}, {$set: {...itemWithoutId}})
   res.status(200).json(result)
 }

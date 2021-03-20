@@ -1,63 +1,51 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Container } from 'react-bootstrap'
 import { useQuery } from 'react-query'
+import {
+  useAuthUser,
+  withAuthUser,
+  AuthAction,
+} from 'next-firebase-auth'
 import OrderCard from '../components/order/OrderCard'
-import { isLoggedIn } from '../services/auth'
 import api from '../services/API'
 
 const OrderPreparing = ({}) => {
-  const [showModal, setShowModal] = useState(false)
-  // const [orders, setOrders] = useState([])
-  const [refresh, setRefresh] = useState(false)
+  const AuthUser = useAuthUser()
 
-  const closeModal = () => {
-    setShowModal(false)
-  }
+  const idTokenQuery = useQuery(['idToken'], () => AuthUser.getIdToken())
 
-  const cancel = () => {
-    closeModal()
-    navigate('/')
-  }
-
-  const refreshOrders = () => {
-    setRefresh(!refresh)
-  }
-
-  const { data: orders, isLoading } = api.ordersQuery('preparing')
+  const { data: orders, isLoading, isError, isIdle, error } = useQuery(
+    ['ordersQuery', 'preparing'],
+    () => api.getOrders('preparing', idTokenQuery.data),
+    {
+      retry: 1,
+      enabled: idTokenQuery.data ? true : false,
+    }
+  )
 
   return (
-    <>
-      {isLoading ? (
-        <div>Loading ...</div>
+    <section className='section section-main'>
+    <Container>
+      {isIdle || isLoading ? (
+        <div>loading ... </div>
+      ) : isError ? (
+        <div>{error.message}</div>
       ) : (
-        <section className='section section-main'>
-          {isLoggedIn() ? (
-            <Container>
-              <div className='mb-4'>Preparing</div>
-              {/* <div className='bg-white rounded border shadow-sm mb-4'> */}
-              {orders ? (
-                orders.map((order) => (
-                  <OrderCard
-                    key={order._id}
-                    order={order}
-                  />
-                ))
-              ) : (
-                <h1>No order cooking in kitchen.</h1>
-              )}
-              {/* </div> */}
-            </Container>
+        <>
+          <div className='mb-4'>Preparing</div>
+          {orders.length > 0 ? (
+            orders.map((order) => <OrderCard key={order._id} order={order} />)
           ) : (
-            <>
-              <Container>
-                <div className='mb-4'>Please login</div>
-              </Container>
-            </>
+            <h1>No order cooking in kitchen.</h1>
           )}
-        </section>
+        </>
       )}
-    </>
+    </Container>
+  </section>
   )
 }
 
-export default OrderPreparing
+export default withAuthUser({
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+  authPageURL: '/login-page/',
+})(OrderPreparing)

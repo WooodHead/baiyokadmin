@@ -1,35 +1,47 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Container } from 'react-bootstrap'
+import { useQuery } from 'react-query'
+import { useAuthUser, withAuthUser, AuthAction } from 'next-firebase-auth'
 import OrderCard from '../components/order/OrderCard'
-import { isLoggedIn } from '../services/auth'
 import api from '../services/API'
 
 const OrderHistory = ({}) => {
-  const {data: orders, isLoading, isError} = api.ordersQuery('')
+  const AuthUser = useAuthUser()
 
-  if (isLoading) return <div>loading ... </div>
-  if (isError) return <div>error</div>
+  const idTokenQuery = useQuery(['idToken'], () => AuthUser.getIdToken())
+
+  const { data: orders, isLoading, isError, isIdle, error } = useQuery(
+    ['ordersQuery', ''],
+    () => api.getOrders('', idTokenQuery.data),
+    {
+      retry: 1,
+      enabled: idTokenQuery.data ? true : false,
+    }
+  )
+
   return (
     <section className='section section-main'>
-      {isLoggedIn() ? <Container>
-        <div className='mb-4'>Orders History</div>
-        {/* <div className='bg-white rounded border shadow-sm mb-4'> */}
-        {orders.length ?
-          orders.map((order) => (
-            <OrderCard
-              key={order._id}
-              order={order}
-              showStatus
-            />
-          )) : <h1>No order today.</h1>}
-        {/* </div> */}
-      </Container> : <>
       <Container>
-        <div className='mb-4'>Please login</div>
-        </Container>
-      </>}
+        {isIdle || isLoading ? (
+          <div>loading ... </div>
+        ) : isError ? (
+          <div>{error.message}</div>
+        ) : (
+          <>
+            <div className='mb-4'>Orders History</div>
+            {orders.length > 0 ? (
+              orders.map((order) => <OrderCard key={order._id} order={order} />)
+            ) : (
+              <h1>No order today.</h1>
+            )}
+          </>
+        )}
+      </Container>
     </section>
   )
 }
 
-export default OrderHistory
+export default withAuthUser({
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+  authPageURL: '/login-page/',
+})(OrderHistory)
