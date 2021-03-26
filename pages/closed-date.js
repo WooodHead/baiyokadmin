@@ -4,6 +4,7 @@ import { DateUtils } from 'react-day-picker'
 import { Col, Container, Row, Spinner, Form, Button } from 'react-bootstrap'
 import dateFnsFormat from 'date-fns/format'
 import dateFnsParse from 'date-fns/parse'
+import moment from 'moment'
 import { useQuery, useQueryClient, useMutation } from 'react-query'
 import { useAuthUser, withAuthUser, AuthAction } from 'next-firebase-auth'
 import ClosedDate from '../components/common/ClosedDate'
@@ -37,10 +38,9 @@ const Dates = () => {
       enabled: !!idTokenQuery.data,
     }
   )
-  const [date, setDate] = useState(null)
+  const [date, setDate] = useState(moment().format('DD-MM-yyyy'))
   const [isButtonLoading, setButtonLoading] = useState(false)
   const FORMAT = 'dd-MM-yyyy'
-
   const { mutate: addDate } = useMutation(() => api.addDate(date), {
     onMutate: () => {
       setButtonLoading(true)
@@ -73,7 +73,7 @@ const Dates = () => {
                 onDayChange={setDate}
                 format={FORMAT}
                 parseDate={parseDate}
-                placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
+                placeholder={''}
               />
               <Button
                 variant='outline-success'
