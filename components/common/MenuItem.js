@@ -1,15 +1,16 @@
 import React, { useState } from 'react'
-import { useQueryClient, useMutation } from 'react-query'
+import { useQuery, useQueryClient, useMutation } from 'react-query'
 import { Badge, Button, Media, Spinner } from 'react-bootstrap'
 import PropTypes from 'prop-types'
-import { useRouter } from 'next/router'
+// import { useRouter } from 'next/router'
 import api from '../../services/API'
 
-const MenuItem = ({ item = null }) => {
+const MenuItem = ({ item = null, idTokenQuery }) => {
+
   const [loading, setLoading] = useState(false)
   const queryClient = useQueryClient()
   const { mutate: switchItem } = useMutation(
-    (available) => api.switchItem(item._id, available),
+    (available) => api.switchItem(item._id, available, idTokenQuery.data),
     {
       onMutate: () => {
         setLoading(true)
@@ -35,6 +36,7 @@ const MenuItem = ({ item = null }) => {
             <Button
               className='btn-medium ml-2'
               variant='outline-success'
+              disabled={!idTokenQuery.data}
               onClick={() => switchItem(false)}>
               ${(item.priceInCents / 100).toFixed(2)}
             </Button>
@@ -42,6 +44,7 @@ const MenuItem = ({ item = null }) => {
             <Button
               variant='outline-danger'
               className='btn-medium text-uppercase ml-2'
+              disabled={!idTokenQuery.data}
               onClick={() => switchItem(true)}>
               Sold Out
             </Button>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useQueryClient, useMutation } from 'react-query'
+import { useQuery, useQueryClient, useMutation } from 'react-query'
 import { Form, Modal, Row, Col, Spinner } from 'react-bootstrap'
 import OrderItem from '../order/OrderItem'
 import formatMoney from '../../services/formatMoney'
@@ -9,7 +9,7 @@ import PriceAdjustModal from './PriceAdjustModal'
 import ConfirmMessageModal from './ConfirmMessageModal'
 import moment from 'moment'
 
-const OrderModal = ({ show, onHide, order }) => {
+const OrderModal = ({ show, onHide, order, idTokenQuery }) => {
   const [showDelay, setShowDelay] = useState(false)
   const [showAdjustPrice, setShowAdjustPrice] = useState(false)
   const [adjustItem, setAdjustItem] = useState(undefined)
@@ -46,45 +46,57 @@ const OrderModal = ({ show, onHide, order }) => {
     setShowAdjustPrice(false)
   }
 
-  const { mutate: cancelOrder } = useMutation((id) => api.cancelOrder(id), {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['ordersQuery', 'open'])
-      onHide()
-    },
-  })
+  const { mutate: cancelOrder } = useMutation(
+    (id) => api.cancelOrder(id, idTokenQuery.data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['ordersQuery', 'open'])
+        onHide()
+      },
+    }
+  )
 
-  const { mutate: confirmOrder } = useMutation((id) => api.confirmOrder(id), {
-    onMutate: () => {
-      setLoading(true)
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['ordersQuery', 'open'])
-      onHide()
-      setLoading(false)
-    },
-  })
+  const { mutate: confirmOrder } = useMutation(
+    (id) => api.confirmOrder(id, idTokenQuery.data),
+    {
+      onMutate: () => {
+        setLoading(true)
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(['ordersQuery', 'open'])
+        onHide()
+        setLoading(false)
+      },
+    }
+  )
 
-  const { mutate: readyOrder } = useMutation((id) => api.readyOrder(id), {
-    onMutate: () => {
-      setLoading(true)
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['ordersQuery', 'preparing'])
-      onHide()
-      setLoading(false)
-    },
-  })
+  const { mutate: readyOrder } = useMutation(
+    (id) => api.readyOrder(id, idTokenQuery.data),
+    {
+      onMutate: () => {
+        setLoading(true)
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(['ordersQuery', 'preparing'])
+        onHide()
+        setLoading(false)
+      },
+    }
+  )
 
-  const { mutate: pickupOrder } = useMutation((id) => api.pickupOrder(id), {
-    onMutate: () => {
-      setLoading(true)
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['ordersQuery', 'ready'])
-      onHide()
-      setLoading(false)
-    },
-  })
+  const { mutate: pickupOrder } = useMutation(
+    (id) => api.pickupOrder(id, idTokenQuery.data),
+    {
+      onMutate: () => {
+        setLoading(true)
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries(['ordersQuery', 'ready'])
+        onHide()
+        setLoading(false)
+      },
+    }
+  )
 
   return (
     <>
@@ -95,13 +107,19 @@ const OrderModal = ({ show, onHide, order }) => {
         confirm={() => cancelOrder(order._id)}
       />
       {showDelay && (
-        <DelayOrderModal show={showDelay} onHide={hideDelay} order={order} />
+        <DelayOrderModal
+          show={showDelay}
+          onHide={hideDelay}
+          order={order}
+          idTokenQuery={idTokenQuery}
+        />
       )}
       {showAdjustPrice && (
         <PriceAdjustModal
           show={showAdjustPrice}
           onHide={hideAdjustPrice}
           order={order}
+          idTokenQuery={idTokenQuery}
         />
       )}
       <Modal show={show} onHide={onHide} size='lg' centered>
@@ -172,6 +190,7 @@ const OrderModal = ({ show, onHide, order }) => {
                         {' '}
                         <button
                           className='invert-theme-btn border full-width-btn mb-0 p-4'
+                          disabled={loading || !idTokenQuery.data}
                           onClick={(e) => {
                             e.preventDefault()
                             setShowAdjustPrice(true)
@@ -182,6 +201,7 @@ const OrderModal = ({ show, onHide, order }) => {
                       <Col>
                         <button
                           className='invert-theme-btn border full-width-btn mb-0 p-4'
+                          disabled={loading || !idTokenQuery.data}
                           onClick={(e) => {
                             e.preventDefault()
                             setShowDelay(true)
@@ -194,6 +214,7 @@ const OrderModal = ({ show, onHide, order }) => {
                       <Col>
                         <button
                           className='theme-btn full-width-btn mb-0 p-4'
+                          disabled={loading || !idTokenQuery.data}
                           onClick={handleShow}>
                           Cancel
                         </button>
@@ -201,7 +222,7 @@ const OrderModal = ({ show, onHide, order }) => {
                       <Col>
                         <button
                           className='theme-btn full-width-btn mb-0 p-4'
-                          disabled={loading}
+                          disabled={loading || !idTokenQuery.data}
                           onClick={() => confirmOrder(order._id)}>
                           {loading && (
                             <>
@@ -225,7 +246,7 @@ const OrderModal = ({ show, onHide, order }) => {
                     <Col>
                       <button
                         className='theme-btn full-width-btn mb-0 p-4'
-                        disabled={loading}
+                        disabled={loading || !idTokenQuery.data}
                         onClick={() => readyOrder(order._id)}>
                         {loading && (
                           <>
@@ -248,7 +269,7 @@ const OrderModal = ({ show, onHide, order }) => {
                     <Col>
                       <button
                         className='theme-btn full-width-btn mb-0 p-4'
-                        disabled={loading}
+                        disabled={loading || !idTokenQuery.data}
                         onClick={() => pickupOrder(order._id)}>
                         {loading && (
                           <>

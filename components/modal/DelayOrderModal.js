@@ -1,16 +1,17 @@
 import React, { useState } from 'react'
 import { Form, Modal, Row, Col, Spinner } from 'react-bootstrap'
 import {
+  useQuery,
   useQueryClient,
   useMutation
 } from 'react-query'
 import api from '../../services/API'
 
-const DelayOrderModal = ({ show, onHide, order }) => {
+const DelayOrderModal = ({ show, onHide, order, idTokenQuery }) => {
   const [delayMins, setDelayMins] = useState(null)
   const [loading, setLoading] = useState(false)
   const queryClient = useQueryClient()
-  const {mutate: delayOrder} =  useMutation(() => api.delayOrder(order._id, delayMins), {
+  const {mutate: delayOrder} =  useMutation(() => api.delayOrder(order._id, delayMins, idTokenQuery.data), {
     onMutate: () => {
       setLoading(true)
     },
@@ -136,7 +137,7 @@ const DelayOrderModal = ({ show, onHide, order }) => {
                 <Col>
                   <button
                     className='theme-btn full-width-btn mb-0 p-4'
-                    disabled={!delayMins || loading}
+                    disabled={!delayMins || loading || !idTokenQuery.data}
                     onClick={() => delayOrder()}>
                     {loading && (
                       <><Spinner

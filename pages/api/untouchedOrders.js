@@ -1,7 +1,7 @@
 const { connectToDatabaseUsingCache } = require('../../services/db')
 
 let db = null
-
+// don't need auth on this
 export default async (req, res) => {
   db = await connectToDatabaseUsingCache(process.env.NEXT_MONGODB_URI, db)
   let start = new Date()

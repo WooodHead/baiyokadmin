@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
-import { useQueryClient, useMutation } from 'react-query'
+import { useQuery, useQueryClient, useMutation } from 'react-query'
 import { Button, Media, Spinner } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 import api from '../../services/API'
 
-const ClosedDate = ({ date = null }) => {
+const ClosedDate = ({ date = null, idTokenQuery }) => {
   const [loading, setLoading] = useState(false)
   const queryClient = useQueryClient()
   const { mutate: deleteDate } = useMutation(
-    () => api.deleteDate(date._id),
+    () => api.deleteDate(date._id, idTokenQuery.data),
     {
       onMutate: () => {
         setLoading(true)
@@ -34,6 +34,7 @@ const ClosedDate = ({ date = null }) => {
             <Button
               variant='outline-danger'
               className='btn-medium text-uppercase ml-2'
+              disabled={!idTokenQuery.data}
               onClick={() => deleteDate()}>
               Delete
             </Button>

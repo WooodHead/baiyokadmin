@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb'
 const { connectToDatabaseUsingCache } = require('../../services/db')
 
 let db = null
-
+// this api don't need auth
 export default async (req, res) => {
   db = await connectToDatabaseUsingCache(process.env.NEXT_MONGODB_URI, db)
   const {

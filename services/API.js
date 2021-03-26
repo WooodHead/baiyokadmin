@@ -15,52 +15,50 @@ const getHeader = (idToken) => {
   return headers
 }
 //  ****** no auths needed  *******//
-const getMenuItems = (AuthUser) => {
-  const headers = getHeader(AuthUser)
-  return client.get(`/api/menuitems`, { headers }).then((res) => res.data)
+const getMenuItems = () => {
+  return client.get(`/api/menuitems`).then((res) => res.data)
 }
 
 function menuItemQuery() {
   return useQuery('menuitems', () => getMenuItems())
 }
 
-const getMenuItem = (menuItemId, AuthUser) => {
-  const headers = getHeader(AuthUser)
+const getMenuItem = (menuItemId) => {
   return client
-    .get(`/api/menuitem?menuItemId=${menuItemId}`, { headers })
+    .get(`/api/menuitem?menuItemId=${menuItemId}`)
     .then((res) => res.data)
 }
 
-const addBooking = (reservation, AuthUser) => {
-  const headers = getHeader(AuthUser)
+const addBooking = (reservation, idToken) => {
+  const headers = getHeader(idToken)
   return client
     .post('/api/addBooking', { reservation }, { headers })
     .then((res) => res.data)
 }
 
-const getBooking = (bookingId, AuthUser) => {
-  const headers = getHeader(AuthUser)
+const getBooking = (bookingId, idToken) => {
+  const headers = getHeader(idToken)
   return client
     .get(`/api/getBooking?bookingId=${bookingId}`, { headers })
     .then((res) => res.data)
 }
 
-const checkin = (checkin, AuthUser) => {
-  const headers = getHeader(AuthUser)
+const checkin = (checkin, idToken) => {
+  const headers = getHeader(idToken)
   return client
     .post('/api/checkin', { checkin }, { headers })
     .then((res) => res.data)
 }
 
-const getBookingSetup = (date, AuthUser) => {
-  const headers = getHeader(AuthUser)
+const getBookingSetup = (date, idToken) => {
+  const headers = getHeader(idToken)
   return client
     .get(`/api/getBookingSetup?date=${date}`, { headers })
     .then((res) => res.data)
 }
 
-const updateMenuItem = (menuItem, AuthUser) => {
-  const headers = getHeader(AuthUser)
+const updateMenuItem = (menuItem, idToken) => {
+  const headers = getHeader(idToken)
   return client
     .post('/api/updateMenuItem', { menuItem }, { headers })
     .then((res) => res.data)
@@ -73,48 +71,46 @@ const getOrders = (status, idToken) => {
     .then((res) => res.data)
 }
 
-function cancelOrder(orderId, AuthUser) {
-  const headers = getHeader(AuthUser)
+function cancelOrder(orderId, idToken) {
+  const headers = getHeader(idToken)
   return client
     .get(`/api/cancelOrder?orderId=${orderId}`, { headers })
     .then((res) => res.data)
 }
 
-const confirmOrder = (orderId, AuthUser) => {
-  const headers = getHeader(AuthUser)
+const confirmOrder = (orderId, idToken) => {
+  const headers = getHeader(idToken)
   return client.get(`/api/confirmOrder?orderId=${orderId}`, { headers })
 }
 
-const readyOrder = (orderId, AuthUser) => {
-  const headers = getHeader(AuthUser)
+const readyOrder = (orderId, idToken) => {
+  const headers = getHeader(idToken)
   return client.get(`/api/readyOrder?orderId=${orderId}`, { headers })
 }
 
-const pickupOrder = (orderId, AuthUser) => {
-  const headers = getHeader(AuthUser)
+const pickupOrder = (orderId, idToken) => {
+  const headers = getHeader(idToken)
   return client.get(`/api/pickupOrder?orderId=${orderId}`, { headers })
 }
 
-const touchOrder = (orderId, AuthUser) => {
-  const headers = getHeader(AuthUser)
-  return client.get(`/api/touchOrder?orderId=${orderId}`, { headers })
+const touchOrder = (orderId) => {
+  return client.get(`/api/touchOrder?orderId=${orderId}`)
 }
 
-const untouchedOrders = (AuthUser) => {
-  const headers = getHeader(AuthUser)
-  return client.get(`/api/untouchedOrders`, { headers }).then((res) => res.data)
+const untouchedOrders = () => {
+  return client.get(`/api/untouchedOrders`).then((res) => res.data)
 }
 
-const delayOrder = (orderId, delayMins, AuthUser) => {
-  const headers = getHeader(AuthUser)
+const delayOrder = (orderId, delayMins, idToken) => {
+  const headers = getHeader(idToken)
   return client.get(
     `/api/delayOrder?orderId=${orderId}&delayMins=${delayMins}`,
     { headers }
   )
 }
 
-const switchItem = (itemId, available, AuthUser) => {
-  const headers = getHeader(AuthUser)
+const switchItem = (itemId, available, idToken) => {
+  const headers = getHeader(idToken)
   return client.get(
     `/api/availableItem?itemId=${itemId}&available=${available}`,
     { headers }
@@ -141,33 +137,35 @@ const adjustPriceOrder = (
   orderId,
   adjustInCents,
   subTotalInCents,
-  adjustNote
+  adjustNote,
+  idToken
 ) => {
+  const headers = getHeader(idToken)
   return client.get(
     `/api/adjustPriceOrder?orderId=${orderId}&adjustInCents=${adjustInCents}&adjustNote=${adjustNote}&subTotalInCents=${subTotalInCents}`,
     { headers }
   )
 }
 
-const addUser = (user) => {
+const addUser = (user, idToken) => {
+  const headers = getHeader(idToken)
   return client
     .post('/api/addUser', { user }, { headers })
     .then((res) => res.data)
 }
 
-const getDateConfigs = () => {
+const getDateConfigs = (idToken) => {
+  const headers = getHeader(idToken)
   return client.get(`/api/getDateConfigs`, { headers }).then((res) => res.data)
 }
 
-function dateConfigsQuery() {
-  return useQuery(['dateConfigs'], () => getDateConfigs())
-}
-
-const deleteDate = (dateId) => {
+const deleteDate = (dateId, idToken) => {
+  const headers = getHeader(idToken)
   return client.get(`/api/deleteDate?dateId=${dateId}`, { headers })
 }
 
-const addDate = (date) => {
+const addDate = (date, idToken) => {
+  const headers = getHeader(idToken)
   return client
     .post(`/api/addDate`, { date }, { headers })
     .then((res) => res.data)
@@ -202,7 +200,7 @@ export default {
   getBusinessHours,
   switchItem,
   menuItemQuery,
-  dateConfigsQuery,
+  getDateConfigs,
   deleteDate,
   addDate,
   setClosedShop,

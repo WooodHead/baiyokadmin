@@ -4,7 +4,8 @@ import { DateUtils } from 'react-day-picker'
 import { Col, Container, Row, Spinner, Form, Button } from 'react-bootstrap'
 import dateFnsFormat from 'date-fns/format'
 import dateFnsParse from 'date-fns/parse'
-import { useQueryClient, useMutation } from 'react-query'
+import { useQuery, useQueryClient, useMutation } from 'react-query'
+import { useAuthUser, withAuthUser, AuthAction } from 'next-firebase-auth'
 import ClosedDate from '../components/common/ClosedDate'
 
 import api from '../services/API'
@@ -21,15 +22,25 @@ function formatDate(date, format, locale) {
   return dateFnsFormat(date, format, { locale })
 }
 
-const Dates = ({}) => {
-  const { data: dates, isLoading, isError } = api.dateConfigsQuery()
+const Dates = () => {
+  const queryClient = useQueryClient()
+  const AuthUser = useAuthUser()
+  const idTokenQuery = useQuery(['idToken'], () => AuthUser.getIdToken(), {
+    enabled: !!AuthUser.id,
+  })
+
+  const { data: dates, isLoading, isError, isIdle, error } = useQuery(
+    ['dateConfigs'],
+    () => api.getDateConfigs(idTokenQuery.data),
+    {
+      retry: 1,
+      enabled: !!idTokenQuery.data,
+    }
+  )
   const [date, setDate] = useState(null)
   const [isButtonLoading, setButtonLoading] = useState(false)
   const FORMAT = 'dd-MM-yyyy'
-  useEffect(() => {
-    console.log('date', date)
-  }, [date])
-  const queryClient = useQueryClient()
+
   const { mutate: addDate } = useMutation(() => api.addDate(date), {
     onMutate: () => {
       setButtonLoading(true)
@@ -45,46 +56,49 @@ const Dates = ({}) => {
   return (
     <section className='section section-main'>
       <Container>
-        <Form.Group
-          controlId='formDate'
-          className='u-margin-bottom-med text-center'>
-          <DayPickerInput
-            formatDate={formatDate}
-            onDayChange={setDate}
-            format={FORMAT}
-            parseDate={parseDate}
-            placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-          />
-          <Button
-            variant='outline-success'
-            className='btn-medium text-uppercase ml-2'
-            disabled={isButtonLoading}
-            onClick={() => addDate()}>
-            {isButtonLoading && (
-              <Spinner
-                as='span'
-                animation='border'
-                size='sm'
-                role='status'
-                aria-hidden='true'
-              />
-            )}{' '}
-            <span>Add{isButtonLoading ? 'ing' : ''}</span>
-          </Button>
-        </Form.Group>
-        {isLoading ? (
+        {isIdle || isLoading ? (
           <>
             <Spinner animation='border' variant='primary' className='mr-2' />{' '}
-            Loading Dates...
+            Loading ...
           </>
+        ) : isError ? (
+          <div>{error.message}</div>
         ) : (
           <>
+            <Form.Group
+              controlId='formDate'
+              className='u-margin-bottom-med text-center'>
+              <DayPickerInput
+                formatDate={formatDate}
+                onDayChange={setDate}
+                format={FORMAT}
+                parseDate={parseDate}
+                placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
+              />
+              <Button
+                variant='outline-success'
+                className='btn-medium text-uppercase ml-2'
+                disabled={isButtonLoading}
+                onClick={() => addDate()}>
+                {isButtonLoading && (
+                  <Spinner
+                    as='span'
+                    animation='border'
+                    size='sm'
+                    role='status'
+                    aria-hidden='true'
+                  />
+                )}{' '}
+                <span>Add{isButtonLoading ? 'ing' : ''}</span>
+              </Button>
+            </Form.Group>
+
             <Row>
               <Col md={12}>
                 <div className='bg-white rounded border shadow-sm mb-4'>
                   {dates &&
                     dates.map((date) => (
-                      <ClosedDate key={date._id} date={date} />
+                      <ClosedDate key={date._id} date={date} idTokenQuery={idTokenQuery}/>
                     ))}
                 </div>
               </Col>
@@ -96,4 +110,7 @@ const Dates = ({}) => {
   )
 }
 
-export default Dates
+export default withAuthUser({
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+  authPageURL: '/login-page/',
+})(Dates)
