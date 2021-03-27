@@ -73,7 +73,7 @@ const Dates = () => {
                 onDayChange={setDate}
                 format={FORMAT}
                 parseDate={parseDate}
-                placeholder={''}
+                placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
               />
               <Button
                 variant='outline-success'
