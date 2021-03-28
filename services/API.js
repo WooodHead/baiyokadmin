@@ -65,7 +65,6 @@ const updateMenuItem = (menuItem, idToken) => {
 }
 
 const getOrders = (status, idToken) => {
-  console.log('auth', idToken)
   const headers = getHeader(idToken)
   return client
     .get(`/api/orders?status=${status}`, { headers })
