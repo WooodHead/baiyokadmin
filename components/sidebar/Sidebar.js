@@ -16,14 +16,12 @@ import LocalMallIcon from '@material-ui/icons/LocalMall'
 import HistoryIcon from '@material-ui/icons/History'
 import LoginIcon from '@material-ui/icons/Lock'
 import LogoutIcon from '@material-ui/icons/ExitToApp'
-import { isLoggedIn, logout } from '../../services/auth'
 import classNames from 'classnames'
 import { ControlPointDuplicateTwoTone } from '@material-ui/icons'
 import api from '../../services/API'
 import {
   useAuthUser,
   withAuthUser,
-  withAuthUserTokenSSR,
   AuthAction,
 } from 'next-firebase-auth'
 const drawerWidth = 70
@@ -66,15 +64,9 @@ function Sidebar(props) {
   const classes = useStyles()
   const [mobileOpen, setMobileOpen] = useState(false)
   const { data } = api.untouchedOrdersQuery()
-  const [userLoggedIn, setUserLoggedIn] = useState(false)
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
-
-  useEffect(() => {
-    setUserLoggedIn(isLoggedIn)
-    console.log('pathname', router.pathname)
-  }, [])
 
   const drawer = (
     <div>
