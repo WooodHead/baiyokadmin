@@ -16,12 +16,13 @@ const OrderIncoming = () => {
 
   const idTokenQuery = useQuery(['idToken'], () => AuthUser.getIdToken(), {
     enabled: !!AuthUser.id,
+    cacheTime: 5 * 60 * 1000,
   })
   const { data: orders, isLoading, isError, isIdle, error } = useQuery(
     ['ordersQuery', 'open'],
     () => api.getOrders('open', idTokenQuery.data),
     {
-      retry: 1,
+      retry: 10,
       enabled: idTokenQuery.data !== undefined,
       refetchInterval: 60000,
     }

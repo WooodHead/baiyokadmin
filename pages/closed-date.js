@@ -28,13 +28,14 @@ const Dates = () => {
   const AuthUser = useAuthUser()
   const idTokenQuery = useQuery(['idToken'], () => AuthUser.getIdToken(), {
     enabled: !!AuthUser.id,
+    cacheTime: 5 * 60 * 1000,
   })
 
   const { data: dates, isLoading, isError, isIdle, error } = useQuery(
     ['dateConfigs'],
     () => api.getDateConfigs(idTokenQuery.data),
     {
-      retry: 1,
+      retry: 10,
       enabled: idTokenQuery.data !== undefined,
     }
   )
