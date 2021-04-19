@@ -27,15 +27,20 @@ const OrderIncoming = () => {
       refetchInterval: 60000,
     }
   )
-
-  const { data } = api.untouchedOrdersQuery()
-  const [playIncoming] = useSound('/sounds/alert.mp3', { volume: 0.25 })
-  useEffect(() => {
-    console.log('data has change')
-    if (data && data.count > 0) {
-      playIncoming()
-    }
-  }, [data])
+  // const [playIncoming] = useSound('/sounds/alert.mp3', { volume: 1 })
+  // const { data } = useQuery(
+  //   ['getUntouchedCount'],
+  //   () => api.untouchedOrders(),
+  //   {
+  //     retry: 10,
+  //     refetchInterval: 10000,
+  //     onSuccess: () => {
+  //       if (data && data.count > 0) {
+  //         playIncoming()
+  //       }
+  //     },
+  //   }
+  // )
 
   return (
     <section className='section section-main'>
@@ -51,7 +56,13 @@ const OrderIncoming = () => {
           <>
             <div className='mb-4'>New Orders</div>
             {orders.length > 0 ? (
-              orders.map((order) => <OrderCard key={order._id} order={order} idTokenQuery={idTokenQuery}/>)
+              orders.map((order) => (
+                <OrderCard
+                  key={order._id}
+                  order={order}
+                  idTokenQuery={idTokenQuery}
+                />
+              ))
             ) : (
               <h1>No new order.</h1>
             )}
