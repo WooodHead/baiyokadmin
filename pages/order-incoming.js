@@ -56,6 +56,7 @@ const OrderIncoming = () => {
           <div>{error.message}</div>
         ) : (
           <>
+          <h1 className='notification'>** CUSTOMER GET A FREE RICE FOR EVERY $35 SPENT **</h1>
             <div className='mb-4'>New Orders</div>
             {orders && orders.length > 0 ? (
               orders.map((order) => (
