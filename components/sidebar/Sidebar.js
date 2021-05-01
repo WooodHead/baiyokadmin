@@ -74,7 +74,9 @@ function Sidebar(props) {
       refetchInterval: 3000,
       onSuccess: () => {
         if (data && data.count > 0) {
-          playIncoming()
+          if (!isPlaying) {
+            playIncoming()
+          }
         } else {
           stop()
         }
