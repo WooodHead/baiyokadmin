@@ -26,7 +26,7 @@ const OrderIncoming = () => {
       onError: () => {
         queryClient.invalidateQueries(['idToken'])
       },
-      refetchInterval: 10000,
+      refetchInterval: 3000,
     }
   )
   // const [playIncoming] = useSound('/sounds/alert.mp3', { volume: 1 })

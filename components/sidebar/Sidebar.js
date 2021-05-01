@@ -71,10 +71,12 @@ function Sidebar(props) {
     () => api.untouchedOrders(),
     {
       retry: 10,
-      refetchInterval: 10000,
+      refetchInterval: 3000,
       onSuccess: () => {
         if (data && data.count > 0) {
           playIncoming()
+        } else {
+          stop()
         }
       },
     }
@@ -82,7 +84,7 @@ function Sidebar(props) {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
-  const [playIncoming] = useSound('/sounds/alert.mp3', { volume: 1 })
+  const [playIncoming, { stop, isPlaying }] = useSound('/sounds/alert2.mp3', { volume: 2 })
 
   const drawer = (
     <div>
