@@ -29,11 +29,11 @@ const Signup = () => {
       signInOptions: [
         {
           provider: firebase.auth.PhoneAuthProvider.PROVIDER_ID,
-          recaptchaParameters: {
-            type: 'image', // 'audio'
-            size: 'invisible', // 'invisible' or 'compact'
-            badge: 'bottomright' //' bottomright' or 'inline' applies to invisible.
-          },
+          // recaptchaParameters: {
+          //   type: 'image', // 'audio'
+          //   size: 'invisible', // 'invisible' or 'compact'
+          //   badge: 'bottomright' //' bottomright' or 'inline' applies to invisible.
+          // },
           defaultCountry: 'AU',
           whitelistedCountries: ['AU', '+61'],
         },
